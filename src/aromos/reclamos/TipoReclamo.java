@@ -1,7 +1,6 @@
 package aromos.reclamos;
 
-// Cada tipo de reclamo ya trae su prioridad:
-// seguridad es alta, mantenimiento es media, convivencia y administrativo son bajas.
+// Tipos de reclamo, cada uno con su prioridad.
 public enum TipoReclamo {
     SEGURIDAD(Prioridad.ALTA),
     MANTENIMIENTO(Prioridad.MEDIA),
