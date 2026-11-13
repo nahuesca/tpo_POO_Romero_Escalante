@@ -16,8 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-// GRASP Controlador: es el intermediario entre el menu y las clases del modelo
-// para el caso de uso "Registrar y gestionar solicitudes y reclamos".
+// Controlador de la presentacion y gestion de solicitudes y reclamos.
 public class ControladorReclamos {
     private Barrio barrio;
 
@@ -25,8 +24,7 @@ public class ControladorReclamos {
         this.barrio = barrio;
     }
 
-    // Diagrama de secuencia "Presentar reclamo":
-    // si el vecino es titular o esta autorizado el lote crea el reclamo; si no, se produce el error.
+    // Crea un reclamo si el vecino es titular o esta autorizado en el lote; si no, lanza un error.
     public Reclamo presentarReclamo(Vecino vecino, Lote lote, TipoReclamo tipo, String descripcion)
             throws ReglaNegocioException {
         if (lote == null) {
@@ -42,7 +40,7 @@ public class ControladorReclamos {
         return lote.crearReclamo(vecino, tipo, descripcion.trim(), barrio.getAhora());
     }
 
-    // El administrador asigna el reclamo. Ningun empleado puede tener mas de 5 reclamos activos.
+    // El administrador asigna un reclamo a un empleado que no supere los 5 reclamos activos.
     public void asignarReclamo(Administrador administrador, Reclamo reclamo, EmpleadoMantenimiento empleado)
             throws ReglaNegocioException {
         if (!empleado.puedeTomarReclamo(barrio.contarReclamosActivosDe(empleado))) {
@@ -52,6 +50,7 @@ public class ControladorReclamos {
         administrador.asignarReclamo(reclamo, empleado, barrio.getAhora());
     }
 
+    // El empleado responsable pasa el reclamo a EN_CURSO o RESUELTO.
     public void actualizarEstado(EmpleadoMantenimiento empleado, Reclamo reclamo, EstadoReclamo nuevoEstado,
                                  String observacion) throws ReglaNegocioException {
         empleado.actualizarReclamo(reclamo, nuevoEstado, observacion, barrio.getAhora());
@@ -62,7 +61,7 @@ public class ControladorReclamos {
         reclamo.cambiarEstado(EstadoReclamo.CERRADO, observacion, barrio.getAhora());
     }
 
-    // Solo quien presento el reclamo o el titular del lote puede reabrirlo.
+    // Reabre un reclamo, solo si lo pide quien lo presento o el titular del lote.
     public void reabrirReclamo(Vecino vecino, Reclamo reclamo) throws ReglaNegocioException {
         boolean esAutor = reclamo.getAutor().equals(vecino);
         boolean esTitular = reclamo.getLote().consultarTitular().equals(vecino);
@@ -72,6 +71,7 @@ public class ControladorReclamos {
         reclamo.reabrir(barrio.getAhora());
     }
 
+    // Agrega un comentario de un usuario a un reclamo.
     public void agregarComentario(Persona autor, Reclamo reclamo, String texto) throws ReglaNegocioException {
         if (texto == null || texto.trim().isEmpty()) {
             throw new ReglaNegocioException("El comentario no puede estar vacio");
@@ -79,7 +79,7 @@ public class ControladorReclamos {
         reclamo.agregarComentario(autor, texto.trim(), barrio.getAhora());
     }
 
-    // Reclamos que puede seguir un vecino: los que presento y los de los lotes de los que es titular.
+    // Devuelve los reclamos que presento un vecino o que pertenecen a lotes de los que es titular.
     public List<Reclamo> consultarReclamosDe(Vecino vecino) {
         List<Reclamo> resultado = new ArrayList<>();
         for (Reclamo r : barrio.consultarTodosLosReclamos()) {
@@ -91,6 +91,7 @@ public class ControladorReclamos {
         return resultado;
     }
 
+    // Devuelve los reclamos asignados a un empleado.
     public List<Reclamo> consultarReclamosAsignadosA(EmpleadoMantenimiento empleado) {
         List<Reclamo> resultado = new ArrayList<>();
         for (Reclamo r : barrio.consultarTodosLosReclamos()) {
@@ -102,10 +103,7 @@ public class ControladorReclamos {
         return resultado;
     }
 
-    // Reglas que dispara el propio sistema (actor "Sistema" de la etapa 1):
-    // - escala al administrador los reclamos de prioridad alta sin atender en 24 horas
-    // - cierra los reclamos resueltos que pasaron 5 dias sin respuesta del vecino
-    // Devuelve un mensaje por cada cosa que hizo.
+    // Escala los reclamos de prioridad alta sin atender en 24 horas y cierra los resueltos sin respuesta en 5 dias.
     public List<String> ejecutarReglasAutomaticas() {
         List<String> mensajes = new ArrayList<>();
         int ahora = barrio.getAhora();
