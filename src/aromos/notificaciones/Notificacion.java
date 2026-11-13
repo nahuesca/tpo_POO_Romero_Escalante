@@ -3,7 +3,7 @@ package aromos.notificaciones;
 import aromos.personas.Persona;
 import java.io.Serializable;
 
-// Aviso que se muestra dentro del sistema (no se manda por mail ni por SMS).
+// Aviso que se muestra dentro del sistema, sin mandarse por mail ni SMS.
 public class Notificacion implements Serializable {
     private int hora;
     private Persona destinatario;
