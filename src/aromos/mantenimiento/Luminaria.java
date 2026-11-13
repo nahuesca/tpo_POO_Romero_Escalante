@@ -2,8 +2,8 @@ package aromos.mantenimiento;
 
 import java.time.LocalDate;
 
+// Equipo de iluminacion cuya prioridad de falla depende de cuantas fallan en el sector.
 public class Luminaria extends Equipo {
-    // Si fallan mas de 3 luminarias del mismo sector, la prioridad pasa a alta.
     public static final int MAX_FALLAS_NORMALES = 3;
 
     private String tipoLampara;
@@ -15,7 +15,7 @@ public class Luminaria extends Equipo {
         this.potencia = potencia;
     }
 
-    // Prioridad normal, salvo que haya mas de 3 luminarias del mismo sector con falla.
+    // La falla es NORMAL salvo que fallen mas de 3 luminarias del mismo sector.
     @Override
     public PrioridadOrden prioridadFalla(int fallasEnElSector) {
         if (fallasEnElSector > MAX_FALLAS_NORMALES) {
