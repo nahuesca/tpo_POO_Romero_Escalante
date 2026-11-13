@@ -6,8 +6,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-// Un pago de un lote. Nunca se elimina: si hubo un error se corrige con un AjustePago.
-// Un pago puede cubrir varias expensas, por eso guarda en que expensas se aplico y cuanto en cada una.
+// Pago de un lote que se reparte entre expensas y que nunca se elimina, solo se corrige con ajustes.
 public class Pago implements Serializable {
     private LocalDate fecha;
     private double importe;
@@ -22,6 +21,7 @@ public class Pago implements Serializable {
         this.medio = medio;
     }
 
+    // Guarda a que expensa se aplico una parte del pago y por cuanto.
     public void agregarImputacion(Expensa expensa, double monto) {
         int posicion = expensasPagadas.indexOf(expensa);
         if (posicion == -1) {
@@ -32,7 +32,7 @@ public class Pago implements Serializable {
         }
     }
 
-    // Importe original mas todos los ajustes
+    // Calcula el importe del pago despues de restar los ajustes.
     public double calcularImporteEfectivo() {
         double total = importe;
         for (AjustePago a : ajustes) {
@@ -41,10 +41,8 @@ public class Pago implements Serializable {
         return Expensa.redondear(total);
     }
 
-    // Quita parte del pago de las expensas, empezando por la ultima en la que se aplico.
-    // Lo que se devuelve vuelve a quedar como capital sin pagar.
+    // Devuelve capital a las expensas de este pago, verificando antes que alcance.
     public void devolver(double monto) throws ReglaNegocioException {
-        // primero se verifica que alcance, para no dejar el pago a medio corregir
         double disponible = 0;
         for (int i = 0; i < expensasPagadas.size(); i++) {
             disponible = disponible + menor(montosPagados.get(i), expensasPagadas.get(i).getCapitalPagado());
@@ -63,6 +61,7 @@ public class Pago implements Serializable {
         }
     }
 
+    // Devuelve el menor de dos numeros.
     private double menor(double a, double b) {
         if (a < b) {
             return a;
@@ -70,6 +69,7 @@ public class Pago implements Serializable {
         return b;
     }
 
+    // Agrega un ajuste al pago.
     public void agregarAjuste(AjustePago ajuste) {
         ajustes.add(ajuste);
     }
