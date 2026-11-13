@@ -8,10 +8,7 @@ import aromos.personas.Lote;
 import aromos.personas.Puesto;
 import aromos.personas.Vecino;
 
-// GRASP Controlador de las tareas de gestion del barrio que hace el administrador:
-// dar de alta vecinos, lotes, residentes y personal, y autorizar a un residente a reclamar.
-// Tambien avanza el reloj del sistema (para la demostracion).
-// Los menus y las ventanas no crean las personas ni cambian el barrio por su cuenta: se lo piden a este controlador.
+// Controlador de las altas de vecinos, lotes, residentes y personal, y del avance del reloj del sistema.
 public class ControladorBarrio {
     private Barrio barrio;
 
@@ -19,6 +16,7 @@ public class ControladorBarrio {
         this.barrio = barrio;
     }
 
+    // Da de alta un vecino validando que los datos obligatorios no esten vacios.
     public Vecino registrarVecino(String nombre, String apellido, String documento, String telefono, String correo)
             throws ReglaNegocioException {
         controlarDatosPersona(nombre, apellido, documento);
@@ -28,7 +26,7 @@ public class ControladorBarrio {
         return vecino;
     }
 
-    // El titular tiene que estar registrado como vecino. Es el Barrio quien crea el lote (GRASP Creador).
+    // Crea un lote nuevo a nombre de un titular que ya este registrado como vecino.
     public Lote crearLote(int numero, double superficie, String documentoTitular) throws ReglaNegocioException {
         Vecino titular = barrio.buscarVecino(documentoTitular.trim());
         if (titular == null) {
@@ -37,7 +35,7 @@ public class ControladorBarrio {
         return barrio.crearLote(numero, superficie, titular);
     }
 
-    // Un residente es un familiar o inquilino que ya esta registrado como vecino.
+    // Agrega a un vecino ya registrado como residente de un lote.
     public Vecino agregarResidente(Lote lote, String documentoResidente) throws ReglaNegocioException {
         Vecino residente = barrio.buscarVecino(documentoResidente.trim());
         if (residente == null) {
@@ -47,12 +45,13 @@ public class ControladorBarrio {
         return residente;
     }
 
-    // Solo el titular puede autorizar (o sacar la autorizacion) a un residente. Lo controla el Lote.
+    // Hace que el titular autorice (o deje de autorizar) a un residente a presentar reclamos.
     public void autorizarReclamante(Vecino quienAutoriza, Lote lote, Vecino residente, boolean autorizado)
             throws ReglaNegocioException {
         lote.autorizarReclamante(quienAutoriza, residente, autorizado);
     }
 
+    // Da de alta un guardia de seguridad.
     public Guardia registrarGuardia(String nombre, String apellido, String documento, int legajo, String turno,
                                     Puesto puesto) throws ReglaNegocioException {
         controlarDatosPersona(nombre, apellido, documento);
@@ -62,6 +61,7 @@ public class ControladorBarrio {
         return guardia;
     }
 
+    // Da de alta un empleado de mantenimiento.
     public EmpleadoMantenimiento registrarEmpleado(String nombre, String apellido, String documento, int legajo,
                                                    String especialidad) throws ReglaNegocioException {
         controlarDatosPersona(nombre, apellido, documento);
@@ -71,7 +71,7 @@ public class ControladorBarrio {
         return empleado;
     }
 
-    // Solo se puede avanzar hacia adelante.
+    // Adelanta el reloj simulado del sistema una cantidad de horas, sin permitir retroceder.
     public void avanzarTiempo(int horas) throws ReglaNegocioException {
         if (horas < 0) {
             throw new ReglaNegocioException("Solo se puede avanzar hacia adelante.");
@@ -79,6 +79,7 @@ public class ControladorBarrio {
         barrio.avanzarHoras(horas);
     }
 
+    // Verifica que nombre, apellido y documento no esten vacios.
     private void controlarDatosPersona(String nombre, String apellido, String documento)
             throws ReglaNegocioException {
         if (nombre.trim().isEmpty() || apellido.trim().isEmpty() || documento.trim().isEmpty()) {
