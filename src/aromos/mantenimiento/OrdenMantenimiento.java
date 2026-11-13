@@ -6,6 +6,7 @@ import aromos.personas.EmpleadoMantenimiento;
 import java.io.Serializable;
 import java.time.LocalDate;
 
+// Orden de trabajo para reparar un equipo, con su prioridad, responsable y cierre.
 public class OrdenMantenimiento implements Serializable {
     private int numero;
     private Equipo equipo;
@@ -26,7 +27,7 @@ public class OrdenMantenimiento implements Serializable {
         this.horaApertura = horaApertura;
     }
 
-    // Al asignar un empleado el equipo pasa a EN_REPARACION.
+    // Asigna un empleado a la orden y pone el equipo EN_REPARACION.
     public void asignarEmpleado(EmpleadoMantenimiento empleado, int ahora) throws ReglaNegocioException {
         if (cerrada) {
             throw new ReglaNegocioException("La orden #" + numero + " ya esta cerrada");
@@ -35,8 +36,7 @@ public class OrdenMantenimiento implements Serializable {
         equipo.cambiarEstado(EstadoEquipo.EN_REPARACION, ahora);
     }
 
-    // Regla de negocio: una orden no se puede cerrar sin registrar la fecha, el tecnico y la descripcion.
-    // Al cerrarla, el equipo vuelve a estar OPERATIVO.
+    // Cierra la orden con la fecha, el tecnico y la descripcion del trabajo.
     public void cerrarOrden(EmpleadoMantenimiento quienCierra, String descripcionTrabajo, LocalDate fecha)
             throws ReglaNegocioException {
         if (cerrada) {
@@ -61,6 +61,7 @@ public class OrdenMantenimiento implements Serializable {
         equipo.cambiarEstado(EstadoEquipo.OPERATIVO, 0);
     }
 
+    // Indica si la orden ya fue cerrada.
     public boolean estaCerrada() { return cerrada; }
     public int getNumero() { return numero; }
     public Equipo getEquipo() { return equipo; }
