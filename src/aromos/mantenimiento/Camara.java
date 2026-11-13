@@ -2,6 +2,7 @@ package aromos.mantenimiento;
 
 import java.time.LocalDate;
 
+// Equipo de seguridad cuyas fallas siempre tienen prioridad alta.
 public class Camara extends Equipo {
     public static final int HORAS_AVISO = 48;
 
@@ -14,7 +15,7 @@ public class Camara extends Equipo {
         this.diasGrabacion = diasGrabacion;
     }
 
-    // Una falla de camara siempre es de prioridad alta.
+    // La falla de una camara siempre es de prioridad ALTA.
     @Override
     public PrioridadOrden prioridadFalla(int fallasEnElSector) {
         return PrioridadOrden.ALTA;
@@ -25,7 +26,7 @@ public class Camara extends Equipo {
         return "Camara";
     }
 
-    // Si la camara lleva mas de 48 horas sin funcionar hay que avisar al administrador (una sola vez).
+    // Indica si la camara lleva mas de 48 horas sin funcionar y todavia no se aviso.
     @Override
     public boolean requiereAviso(int ahora) {
         return !estaOperativo() && !isAvisoEnviado() && ahora - getHoraFalla() > HORAS_AVISO;
