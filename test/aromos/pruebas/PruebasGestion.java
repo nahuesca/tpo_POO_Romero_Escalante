@@ -5,9 +5,9 @@ import aromos.excepciones.NoAutorizadoException;
 import aromos.personas.Puesto;
 import aromos.personas.Vecino;
 
-// Pruebas del controlador que hace las altas del barrio y avanza el reloj.
+// Pruebas de las altas de vecinos, lotes, personal y del reloj del sistema.
 public class PruebasGestion {
-
+    // Corre todas las pruebas de gestion.
     public void ejecutar(Verificador v) throws Exception {
         vecinos(v);
         lotes(v);
@@ -16,6 +16,7 @@ public class PruebasGestion {
         reloj(v);
     }
 
+    // Prueba el alta de vecinos.
     private void vecinos(Verificador v) throws Exception {
         v.grupo("Gestion: alta de vecinos");
         Escenario e = new Escenario();
@@ -42,6 +43,7 @@ public class PruebasGestion {
         v.verificarError("Faltan datos: no se registra", error);
     }
 
+    // Prueba la creacion de lotes.
     private void lotes(Verificador v) throws Exception {
         v.grupo("Gestion: alta de lotes");
         Escenario e = new Escenario();
@@ -70,6 +72,7 @@ public class PruebasGestion {
         v.verificarError("No se puede repetir el numero de lote", error);
     }
 
+    // Cuenta los lotes de un titular.
     private int contarLotesDeTitular(Escenario e, String documento) {
         int cantidad = 0;
         for (aromos.personas.Lote l : e.barrio.consultarLotes()) {
@@ -80,12 +83,13 @@ public class PruebasGestion {
         return cantidad;
     }
 
+    // Prueba los residentes y la autorizacion para reclamar.
     private void residentesYAutorizacion(Verificador v) throws Exception {
         v.grupo("Gestion: residentes y autorizacion para reclamar");
         Escenario e = new Escenario();
         ControladorBarrio c = new ControladorBarrio(e.barrio);
 
-        c.registrarVecino("Hugo", "Paz", "4001", "111", "h@mail.com"); // nace sin autorizacion para reclamar
+        c.registrarVecino("Hugo", "Paz", "4001", "111", "h@mail.com");
         Vecino residente = c.agregarResidente(e.lote2, "4001");
         v.verificar("El vecino pasa a ser residente del lote 2", e.lote2.esTitularOResidente(residente));
         v.verificar("Un residente nuevo no puede reclamar hasta que el titular lo autorice",
@@ -111,6 +115,7 @@ public class PruebasGestion {
         v.verificarError("El residente tiene que estar registrado", error);
     }
 
+    // Prueba el alta de guardias y empleados.
     private void personal(Verificador v) throws Exception {
         v.grupo("Gestion: alta de personal");
         Escenario e = new Escenario();
@@ -138,6 +143,7 @@ public class PruebasGestion {
         v.verificarError("No se puede repetir el legajo de un empleado", error);
     }
 
+    // Prueba el avance del reloj del sistema.
     private void reloj(Verificador v) throws Exception {
         v.grupo("Gestion: reloj del sistema");
         Escenario e = new Escenario();
