@@ -2,8 +2,7 @@ package aromos.personas;
 
 import java.io.Serializable;
 
-// Clase abstracta con los datos que tienen en comun todas las personas del sistema.
-// Implementa Serializable para poder guardarla en un archivo.
+// Clase abstracta con los datos comunes de cualquier persona del barrio.
 public abstract class Persona implements Serializable {
     private String nombre;
     private String apellido;
@@ -19,7 +18,6 @@ public abstract class Persona implements Serializable {
         this.correo = correo;
     }
 
-    // Cada subclase devuelve su propio rol (se sobreescribe).
     public abstract String obtenerRol();
 
     public String getNombre() { return nombre; }
@@ -28,7 +26,7 @@ public abstract class Persona implements Serializable {
     public String getTelefono() { return telefono; }
     public String getCorreo() { return correo; }
 
-    // Dos personas son la misma si tienen el mismo documento.
+    // Dos personas son iguales si tienen el mismo documento.
     @Override
     public boolean equals(Object otro) {
         if (!(otro instanceof Persona)) {
