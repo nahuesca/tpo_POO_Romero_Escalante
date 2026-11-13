@@ -2,7 +2,7 @@ package aromos.reclamos;
 
 import java.io.Serializable;
 
-// Una linea del historial de un reclamo: cuando, a que estado paso y una observacion.
+// Linea del historial de un reclamo con la hora, el nuevo estado y una observacion.
 public class CambioEstado implements Serializable {
     private int hora;
     private EstadoReclamo nuevoEstado;
