@@ -14,7 +14,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-// GRASP Controlador del caso de uso "Controlar luminarias y camaras de seguridad".
+// Controlador del control de luminarias y camaras de seguridad y de sus ordenes de mantenimiento.
 public class ControladorMantenimiento {
     private Barrio barrio;
 
@@ -22,6 +22,7 @@ public class ControladorMantenimiento {
         this.barrio = barrio;
     }
 
+    // Da de alta una camara de seguridad.
     public Camara registrarCamara(String codigo, Sector sector, LocalDate instalacion, String resolucion,
                                   int diasGrabacion) throws ReglaNegocioException {
         Camara camara = new Camara(codigo.trim(), sector, instalacion, resolucion, diasGrabacion);
@@ -29,6 +30,7 @@ public class ControladorMantenimiento {
         return camara;
     }
 
+    // Da de alta una luminaria.
     public Luminaria registrarLuminaria(String codigo, Sector sector, LocalDate instalacion, String tipoLampara,
                                         double potencia) throws ReglaNegocioException {
         Luminaria luminaria = new Luminaria(codigo.trim(), sector, instalacion, tipoLampara, potencia);
@@ -36,16 +38,14 @@ public class ControladorMantenimiento {
         return luminaria;
     }
 
-    // Un vecino o un guardia registra la falla: el equipo pasa a CON_FALLA.
+    // Registra la falla de un equipo y lo pasa al estado CON_FALLA.
     public Equipo reportarFalla(String codigoEquipo) throws ReglaNegocioException {
         Equipo equipo = buscarEquipo(codigoEquipo);
         equipo.registrarFalla(barrio.getAhora());
         return equipo;
     }
 
-    // El administrador genera la orden de mantenimiento.
-    // La prioridad la decide el propio equipo: la camara siempre es ALTA y la luminaria es NORMAL
-    // salvo que fallen mas de 3 del mismo sector (polimorfismo).
+    // Genera la orden de mantenimiento de un equipo con la prioridad que define el propio equipo.
     public OrdenMantenimiento generarOrden(String codigoEquipo, String descripcion) throws ReglaNegocioException {
         Equipo equipo = buscarEquipo(codigoEquipo);
         if (equipo.estaOperativo()) {
@@ -67,6 +67,7 @@ public class ControladorMantenimiento {
         return orden;
     }
 
+    // Asigna una orden de mantenimiento a un empleado.
     public void asignarOrden(int numeroOrden, EmpleadoMantenimiento empleado) throws ReglaNegocioException {
         OrdenMantenimiento orden = barrio.buscarOrden(numeroOrden);
         if (orden == null) {
@@ -75,7 +76,7 @@ public class ControladorMantenimiento {
         orden.asignarEmpleado(empleado, barrio.getAhora());
     }
 
-    // El empleado cierra la orden registrando fecha, tecnico y descripcion del trabajo.
+    // Cierra una orden registrando fecha, tecnico y descripcion del trabajo realizado.
     public void cerrarOrden(int numeroOrden, EmpleadoMantenimiento empleado, String descripcionTrabajo,
                             LocalDate fecha) throws ReglaNegocioException {
         OrdenMantenimiento orden = barrio.buscarOrden(numeroOrden);
@@ -85,10 +86,12 @@ public class ControladorMantenimiento {
         empleado.registrarReparacion(orden, descripcionTrabajo, fecha);
     }
 
+    // Cambia manualmente el estado de un equipo.
     public void cambiarEstadoEquipo(String codigoEquipo, EstadoEquipo nuevoEstado) throws ReglaNegocioException {
         buscarEquipo(codigoEquipo).cambiarEstado(nuevoEstado, barrio.getAhora());
     }
 
+    // Devuelve las ordenes de mantenimiento asignadas a un empleado.
     public List<OrdenMantenimiento> consultarOrdenesDe(EmpleadoMantenimiento empleado) {
         List<OrdenMantenimiento> resultado = new ArrayList<>();
         for (OrdenMantenimiento o : barrio.consultarOrdenes()) {
@@ -99,7 +102,7 @@ public class ControladorMantenimiento {
         return resultado;
     }
 
-    // Equipos con falla que todavia no tienen una orden abierta
+    // Devuelve los equipos con falla que todavia no tienen una orden abierta.
     public List<Equipo> consultarEquiposSinOrden() {
         List<Equipo> resultado = new ArrayList<>();
         for (Equipo e : barrio.consultarEquipos()) {
@@ -116,7 +119,7 @@ public class ControladorMantenimiento {
         return resultado;
     }
 
-    // Regla del sistema: si una camara lleva mas de 48 horas sin funcionar se avisa al administrador.
+    // Regla del sistema: avisa al administrador de las camaras que llevan mas de 48 horas sin funcionar.
     public List<String> revisarEquipos() {
         List<String> mensajes = new ArrayList<>();
         for (Equipo e : barrio.consultarEquipos()) {
@@ -131,6 +134,7 @@ public class ControladorMantenimiento {
         return mensajes;
     }
 
+    // Busca un equipo por codigo y falla si no existe.
     private Equipo buscarEquipo(String codigo) throws ReglaNegocioException {
         Equipo equipo = barrio.buscarEquipo(codigo);
         if (equipo == null) {
