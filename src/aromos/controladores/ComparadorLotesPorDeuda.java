@@ -4,7 +4,7 @@ import aromos.personas.Lote;
 import java.time.LocalDate;
 import java.util.Comparator;
 
-// Orden personalizado: primero el lote que mas debe.
+// Ordena los lotes poniendo primero al que mas debe.
 public class ComparadorLotesPorDeuda implements Comparator<Lote> {
     private LocalDate hoy;
 
@@ -12,6 +12,7 @@ public class ComparadorLotesPorDeuda implements Comparator<Lote> {
         this.hoy = hoy;
     }
 
+    // Compara dos lotes por su deuda vencida, de mayor a menor.
     @Override
     public int compare(Lote a, Lote b) {
         double deudaA = a.calcularDeudaVencida(hoy);
