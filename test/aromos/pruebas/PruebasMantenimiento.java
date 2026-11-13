@@ -7,15 +7,18 @@ import aromos.mantenimiento.PrioridadOrden;
 import aromos.mantenimiento.Sector;
 import java.time.LocalDate;
 
+// Pruebas de equipos, ordenes de mantenimiento y avisos.
 public class PruebasMantenimiento {
     private static final LocalDate INSTALADO = LocalDate.of(2025, 1, 1);
 
+    // Corre todas las pruebas de mantenimiento.
     public void ejecutar(Verificador v) throws Exception {
         prioridadDeLasOrdenes(v);
         cierreDeUnaOrden(v);
         avisoDeCamaras(v);
     }
 
+    // Prueba la prioridad de las ordenes segun el tipo de equipo.
     private void prioridadDeLasOrdenes(Verificador v) throws Exception {
         v.grupo("Mantenimiento: prioridad de las ordenes");
         Escenario e = new Escenario();
@@ -49,6 +52,7 @@ public class PruebasMantenimiento {
         v.verificarError("No se reporta dos veces la misma falla", error);
     }
 
+    // Prueba la asignacion y el cierre de una orden.
     private void cierreDeUnaOrden(Verificador v) throws Exception {
         v.grupo("Mantenimiento: una orden no se cierra sin fecha, tecnico y descripcion");
         Escenario e = new Escenario();
@@ -82,6 +86,7 @@ public class PruebasMantenimiento {
                 e.barrio.buscarEquipo("LUM-1").getEstado());
     }
 
+    // Prueba el aviso por camaras sin funcionar.
     private void avisoDeCamaras(Verificador v) throws Exception {
         v.grupo("Mantenimiento: camara sin funcionar mas de 48 horas avisa al administrador");
         Escenario e = new Escenario();
