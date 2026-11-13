@@ -1,7 +1,7 @@
 package aromos.personas;
 
+// Persona duena o residente de un lote del barrio.
 public class Vecino extends Persona {
-    // true si el titular del lote lo autorizo a presentar reclamos (se usa para familiares e inquilinos)
     private boolean autorizadoReclamos;
 
     public Vecino(String nombre, String apellido, String documento, String telefono,
@@ -10,6 +10,7 @@ public class Vecino extends Persona {
         this.autorizadoReclamos = autorizadoReclamos;
     }
 
+    // Devuelve el nombre del rol, VECINO.
     @Override
     public String obtenerRol() {
         return "Vecino";
