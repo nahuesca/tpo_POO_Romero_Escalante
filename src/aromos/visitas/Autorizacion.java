@@ -9,8 +9,7 @@ import aromos.personas.Visitante;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-// Autorizacion previa de un vecino para que una persona entre al barrio.
-// La franja horaria se guarda como horas del dia (0 a 23).
+// Permiso que da un vecino para que una persona ingrese a un lote en una fecha y franja horaria.
 public class Autorizacion implements Serializable {
     public static final int MAX_DIAS_RECURRENTE = 30;
 
@@ -56,7 +55,7 @@ public class Autorizacion implements Serializable {
         this.recurrente = recurrente;
     }
 
-    // Esta vigente si la fecha y la hora actuales estan dentro de lo autorizado.
+    // Indica si la fecha y la hora actuales estan dentro de lo autorizado.
     public boolean estaVigente(LocalDate hoy, int hora) {
         boolean fechaValida = !hoy.isBefore(fechaDesde) && !hoy.isAfter(fechaHasta);
         boolean horaValida = hora >= horaDesde && hora <= horaHasta;
