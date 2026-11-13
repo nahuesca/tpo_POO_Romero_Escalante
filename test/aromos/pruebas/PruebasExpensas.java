@@ -9,8 +9,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+// Pruebas del calculo de expensas, intereses, pagos y morosidad.
 public class PruebasExpensas {
-
+    // Corre todas las pruebas de expensas.
     public void ejecutar(Verificador v) throws Exception {
         calculoDeLaExpensa(v);
         interesPorMora(v);
@@ -20,6 +21,7 @@ public class PruebasExpensas {
         ordenNatural(v);
     }
 
+    // Prueba el reparto del presupuesto segun el coeficiente.
     private void calculoDeLaExpensa(Verificador v) throws Exception {
         v.grupo("Expensas: importe = presupuesto x coeficiente");
         Escenario e = new Escenario();
@@ -38,29 +40,29 @@ public class PruebasExpensas {
         v.verificarError("No se puede emitir dos veces el mismo periodo", error);
     }
 
+    // Prueba el calculo del interes por mora.
     private void interesPorMora(Verificador v) throws Exception {
         v.grupo("Expensas: interes del 3% mensual");
         Escenario e = new Escenario();
         new ControladorExpensas(e.barrio).emitirExpensas(2026, 1, 1000000);
-        Expensa expensa = e.lote1.obtenerExpensas().get(0); // importe 250000
+        Expensa expensa = e.lote1.obtenerExpensas().get(0);
         v.verificarNumero("Antes del vencimiento no hay interes", 0, expensa.calcularInteresMora(LocalDate.of(2026, 1, 5)));
         v.verificarNumero("Un dia despues del vencimiento: 1 mes = 3%", 7500, expensa.calcularInteresMora(LocalDate.of(2026, 1, 11)));
         v.verificarNumero("Un mes y un dia despues: 2 meses = 6%", 15000, expensa.calcularInteresMora(LocalDate.of(2026, 2, 11)));
     }
 
+    // Prueba la aplicacion de pagos a las expensas.
     private void pagos(Verificador v) throws Exception {
         v.grupo("Expensas: los pagos se aplican primero a intereses y despues a capital");
         Escenario e = new Escenario();
         ControladorExpensas c = new ControladorExpensas(e.barrio);
         c.emitirExpensas(2026, 1, 1000000);
 
-        // el 11/02 hay 2 meses de atraso: interes 15000. Pago de 20000 = 15000 de interes + 5000 de capital
         c.registrarPago(e.lote1, 20000, MedioPago.EFECTIVO, LocalDate.of(2026, 2, 11));
         Expensa enero = e.lote1.obtenerExpensas().get(0);
         v.verificarNumero("Primero se paga el interes", 15000, enero.getInteresPagado());
         v.verificarNumero("Lo que sobra va al capital", 5000, enero.getCapitalPagado());
 
-        // un pago puede cubrir mas de una expensa: se empieza por la mas antigua
         Escenario e2 = new Escenario();
         ControladorExpensas c2 = new ControladorExpensas(e2.barrio);
         c2.emitirExpensas(2026, 1, 1000000);
@@ -78,6 +80,7 @@ public class PruebasExpensas {
         v.verificarError("Un pago mayor que la deuda se rechaza", error);
     }
 
+    // Prueba cuando un lote pasa a ser moroso.
     private void morosidad(Verificador v) throws Exception {
         v.grupo("Expensas: mas de 3 periodos impagos = lote moroso");
         Escenario e = new Escenario();
@@ -97,6 +100,7 @@ public class PruebasExpensas {
         v.verificarIgual("No se vuelve a notificar", 1, e.barrio.consultarNotificaciones(e.titular1).size());
     }
 
+    // Prueba la correccion de pagos con ajustes.
     private void ajustes(Verificador v) throws Exception {
         v.grupo("Expensas: un pago no se elimina, se corrige con un ajuste");
         Escenario e = new Escenario();
@@ -119,6 +123,7 @@ public class PruebasExpensas {
         v.verificarError("Un ajuste sin motivo se rechaza", error);
     }
 
+    // Prueba el orden de las expensas por periodo.
     private void ordenNatural(Verificador v) throws Exception {
         v.grupo("Expensas: orden natural (Comparable) por periodo");
         Escenario e = new Escenario();
