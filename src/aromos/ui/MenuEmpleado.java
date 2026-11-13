@@ -10,6 +10,7 @@ import aromos.reclamos.EstadoReclamo;
 import aromos.reclamos.Reclamo;
 import java.time.LocalDate;
 
+// Menu de consola del empleado de mantenimiento.
 public class MenuEmpleado extends MenuBase {
     private EmpleadoMantenimiento empleado;
     private ControladorReclamos reclamos;
@@ -28,6 +29,7 @@ public class MenuEmpleado extends MenuBase {
                 + " (" + empleado.getEspecialidad() + ")";
     }
 
+    // Devuelve las opciones del menu del empleado.
     @Override
     public String[] opciones() {
         return new String[] {
@@ -39,6 +41,7 @@ public class MenuEmpleado extends MenuBase {
         };
     }
 
+    // Ejecuta la accion de la opcion elegida.
     @Override
     public void ejecutarOpcion(int opcion) {
         switch (opcion) {
@@ -51,12 +54,14 @@ public class MenuEmpleado extends MenuBase {
         }
     }
 
+    // Muestra los reclamos asignados al empleado.
     private void verMisReclamos() {
         consola.titulo("Mis reclamos asignados (" + barrio.contarReclamosActivosDe(empleado) + " activos de "
                 + EmpleadoMantenimiento.MAX_RECLAMOS_EN_CURSO + " permitidos)");
         consola.listar("no tiene reclamos asignados", reclamos.consultarReclamosAsignadosA(empleado));
     }
 
+    // Cambia el estado de un reclamo asignado.
     private void actualizarReclamo() {
         Reclamo reclamo = pedirReclamo();
         if (reclamo == null) {
@@ -73,6 +78,7 @@ public class MenuEmpleado extends MenuBase {
         }
     }
 
+    // Agrega un comentario a un reclamo.
     private void comentarReclamo() {
         Reclamo reclamo = pedirReclamo();
         if (reclamo == null) {
@@ -87,11 +93,13 @@ public class MenuEmpleado extends MenuBase {
         }
     }
 
+    // Muestra las ordenes asignadas al empleado.
     private void verMisOrdenes() {
         consola.titulo("Mis ordenes de mantenimiento");
         consola.listar("no tiene ordenes asignadas", mantenimiento.consultarOrdenesDe(empleado));
     }
 
+    // Cierra una orden registrando el trabajo hecho.
     private void cerrarOrden() {
         int numero = consola.leerEntero("Numero de orden");
         OrdenMantenimiento orden = barrio.buscarOrden(numero);
