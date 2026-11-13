@@ -15,9 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-// Ventana de un rol (vecino, administrador, guardia o empleado).
-// Tiene un boton por cada opcion del menu de ese rol y usa el mismo menu que la consola,
-// asi que no repite la logica. Sirve para los cuatro roles.
+// Ventana de un rol con los botones de su menu y el area donde se muestran los resultados.
 public class VentanaRol extends JFrame implements ActionListener {
     private MenuBase menu;
     private Barrio barrio;
@@ -35,15 +33,13 @@ public class VentanaRol extends JFrame implements ActionListener {
         this.barrio = barrio;
         this.archivo = archivo;
 
-        // area de texto donde se muestran los resultados
         txtSalida = new JTextArea();
         txtSalida.setEditable(false);
         txtSalida.setLineWrap(true);
         txtSalida.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 13));
         consola = new ConsolaGrafica(this, txtSalida);
-        menu.setConsola(consola); // el menu muestra sus resultados en esta ventana
+        menu.setConsola(consola);
 
-        // un boton por cada opcion del menu
         opciones = menu.opciones();
         botones = new JButton[opciones.length];
         JPanel pnlBotones = new JPanel(new GridLayout(0, 1, 5, 5));
@@ -72,7 +68,7 @@ public class VentanaRol extends JFrame implements ActionListener {
         consola.linea("Elija una opcion de la izquierda.");
     }
 
-    // Se ejecuta cada vez que se aprieta un boton
+    // Ejecuta la opcion del menu que corresponde al boton apretado.
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnCerrar) {
@@ -92,7 +88,7 @@ public class VentanaRol extends JFrame implements ActionListener {
         }
     }
 
-    // Los datos se guardan despues de cada accion
+    // Guarda los datos del barrio en el archivo.
     private void guardar() {
         try {
             archivo.guardar(barrio);
