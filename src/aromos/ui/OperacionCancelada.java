@@ -1,9 +1,7 @@
 package aromos.ui;
 
-// Se lanza cuando la persona cierra o cancela un cuadro de dialogo en medio de una operacion.
-// La ventana la atiende y simplemente avisa que la operacion se cancelo.
+// Se lanza cuando el usuario cancela una operacion en un cuadro de dialogo.
 public class OperacionCancelada extends RuntimeException {
-
     public OperacionCancelada() {
         super("Operacion cancelada");
     }
