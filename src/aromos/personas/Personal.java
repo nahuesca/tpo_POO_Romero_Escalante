@@ -6,7 +6,7 @@ import aromos.reclamos.EstadoReclamo;
 import aromos.reclamos.Reclamo;
 import java.time.LocalDate;
 
-// Trabajador del barrio. Es abstracta: los tipos reales son Administrador, Guardia y EmpleadoMantenimiento.
+// Clase abstracta del personal del barrio, con legajo y fecha de ingreso.
 public abstract class Personal extends Persona {
     private int legajo;
     private LocalDate fechaIngreso;
@@ -18,12 +18,13 @@ public abstract class Personal extends Persona {
         this.fechaIngreso = fechaIngreso;
     }
 
+    // Devuelve el nombre del rol del personal.
     @Override
     public String obtenerRol() {
         return "Personal";
     }
 
-    // El responsable del reclamo lo pasa a EN_CURSO o a RESUELTO.
+    // Permite al responsable pasar un reclamo a EN_CURSO o RESUELTO.
     public void actualizarReclamo(Reclamo reclamo, EstadoReclamo nuevoEstado, String observacion, int ahora)
             throws ReglaNegocioException {
         if (!this.equals(reclamo.getResponsable())) {
