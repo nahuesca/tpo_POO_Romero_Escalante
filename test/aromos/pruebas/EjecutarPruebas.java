@@ -1,8 +1,8 @@
 package aromos.pruebas;
 
-// Ejecuta todas las pruebas. Hay que correrlo desde la carpeta del proyecto (la que tiene src, test y datos).
+// Programa que corre todos los grupos de pruebas y muestra el resumen.
 public class EjecutarPruebas {
-
+    // Ejecuta las pruebas y termina con error si alguna falla.
     public static void main(String[] args) {
         Verificador v = new Verificador();
         try {
