@@ -10,9 +10,7 @@ import aromos.personas.Puesto;
 import aromos.personas.Vecino;
 import java.time.LocalDate;
 
-// Datos que usan todas las pruebas: un barrio chico con fechas fijas
-// para que los resultados siempre sean los mismos.
-// El reloj del barrio arranca el 2026-03-02 a las 9 hs.
+// Barrio de prueba con datos fijos y un reloj conocido, para que los resultados siempre sean los mismos.
 public class Escenario {
     public Barrio barrio = new Barrio("Los Aromos (pruebas)", LocalDate.of(2026, 3, 2));
 
@@ -33,7 +31,6 @@ public class Escenario {
     public Vecino residenteSinAutorizar = new Vecino("Dario", "Perez", "1004", "111", "dario@mail.com", false);
     public Vecino ajeno = new Vecino("Eva", "Ruiz", "1005", "111", "eva@mail.com", true);
 
-    // Lote 1: 1000 m2 (25% del barrio). Lote 2: 3000 m2 (75%).
     public Lote lote1;
     public Lote lote2;
 
