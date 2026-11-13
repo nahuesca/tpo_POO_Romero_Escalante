@@ -21,10 +21,9 @@ import aromos.reclamos.TipoReclamo;
 import java.time.LocalDate;
 import java.util.List;
 
-// Datos de ejemplo. Se cargan la primera vez que se ejecuta el programa
-// (cuando todavia no existe el archivo de datos).
+// Arma un barrio de ejemplo con vecinos, lotes, equipos y reclamos para probar el sistema.
 public class DatosPrueba {
-
+    // Devuelve el barrio de prueba ya cargado.
     public static Barrio crear() {
         try {
             return armarBarrio();
@@ -33,11 +32,11 @@ public class DatosPrueba {
         }
     }
 
+    // Crea y completa todos los datos del barrio de ejemplo.
     private static Barrio armarBarrio() throws ReglaNegocioException {
         LocalDate hoy = LocalDate.now();
         Barrio barrio = new Barrio("Los Aromos", hoy);
 
-        // ----- personal -----
         barrio.designarAdministrador(new Administrador("Marta", "Gomez", "20111222", "1155550001",
                 "marta@losaromos.com", 1, hoy.minusYears(5)));
         barrio.registrarGuardia(new Guardia("Juan", "Perez", "25111001", "1155550011", "juan@losaromos.com",
@@ -52,7 +51,6 @@ public class DatosPrueba {
         barrio.registrarEmpleado(new EmpleadoMantenimiento("Pedro", "Luna", "27111003", "1155550023",
                 "pedro@losaromos.com", 23, hoy.minusYears(1), "jardineria"));
 
-        // ----- vecinos y lotes -----
         String[] nombres = {"Laura", "Diego", "Sofia", "Martin", "Julia", "Pablo", "Valeria", "Nicolas", "Camila", "Federico"};
         String[] apellidos = {"Fernandez", "Martinez", "Lopez", "Garcia", "Sanchez", "Romero", "Torres", "Alvarez", "Ruiz", "Molina"};
         double[] superficies = {600, 650, 700, 800, 600, 900, 750, 600, 1000, 850};
@@ -63,11 +61,10 @@ public class DatosPrueba {
             barrio.registrarVecino(titulares[i]);
             barrio.crearLote(i + 1, superficies[i], titulares[i]);
         }
-        // una misma persona puede ser titular de mas de un lote
+
         barrio.crearLote(11, 700, titulares[0]);
         barrio.crearLote(12, 500, titulares[0]);
 
-        // residentes del lote 1 (familiar autorizado) y del lote 2 (inquilina sin autorizar)
         Vecino familiar = new Vecino("Marcos", "Fernandez", "30000011", "1155550111", "marcos@mail.com", true);
         Vecino inquilina = new Vecino("Elena", "Vega", "30000012", "1155550112", "elena@mail.com", false);
         barrio.registrarVecino(familiar);
@@ -75,7 +72,6 @@ public class DatosPrueba {
         barrio.buscarLote(1).agregarResidente(familiar);
         barrio.buscarLote(2).agregarResidente(inquilina);
 
-        // ----- expensas de los ultimos 5 meses y pagos -----
         ControladorExpensas expensas = new ControladorExpensas(barrio);
         for (int atras = 4; atras >= 0; atras--) {
             LocalDate mes = hoy.minusMonths(atras);
@@ -83,14 +79,14 @@ public class DatosPrueba {
         }
         for (Lote lote : barrio.consultarLotes()) {
             if (lote.getNumero() == 5) {
-                continue; // el lote 5 no paga nada: queda moroso
+                continue;
             }
             List<Expensa> lista = lote.obtenerExpensas();
             for (int i = 0; i < lista.size(); i++) {
                 if (lote.getNumero() == 6 && i >= 2) {
-                    break; // el lote 6 solo pago los dos primeros meses
+                    break;
                 }
-                // paga el dia 5 de cada mes (si ese dia todavia no llego, no paga)
+
                 LocalDate fechaPago = hoy.minusMonths(4 - i).withDayOfMonth(5);
                 if (!fechaPago.isAfter(hoy)) {
                     expensas.registrarPago(lote, lista.get(i).getImporte(), MedioPago.TRANSFERENCIA, fechaPago);
@@ -99,7 +95,6 @@ public class DatosPrueba {
         }
         expensas.verificarMorosidad(hoy);
 
-        // ----- equipos -----
         ControladorMantenimiento mantenimiento = new ControladorMantenimiento(barrio);
         LocalDate instalacion = hoy.minusYears(1);
         mantenimiento.registrarCamara("CAM-01", Sector.ACCESOS, instalacion, "1080p", 30);
@@ -112,7 +107,6 @@ public class DatosPrueba {
         mantenimiento.registrarLuminaria("LUM-07", Sector.ESPACIOS_COMUNES, instalacion, "Sodio", 150);
         mantenimiento.reportarFalla("LUM-03");
 
-        // ----- reclamos -----
         ControladorReclamos reclamos = new ControladorReclamos(barrio);
         reclamos.presentarReclamo(titulares[0], barrio.buscarLote(1), TipoReclamo.SEGURIDAD,
                 "Falta iluminacion en la esquina del lote 1");
@@ -120,7 +114,6 @@ public class DatosPrueba {
                 "Perdida de agua en la vereda");
         reclamos.asignarReclamo(barrio.getAdministrador(), perdida, plomera);
 
-        // ----- autorizaciones de visita (valen todo el dia de hoy, de 0 a 23 hs) -----
         ControladorVisitas visitas = new ControladorVisitas(barrio);
         visitas.autorizarVisita(titulares[0], barrio.buscarLote(1), "Roberto", "Paz", "40111222",
                 TipoVisitante.PARTICULAR, hoy, hoy, 0, 23, false);
