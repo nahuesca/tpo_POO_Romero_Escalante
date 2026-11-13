@@ -1,8 +1,7 @@
 package aromos.excepciones;
 
-// Se lanza cuando se supera un limite (por ejemplo, mas de 5 reclamos en curso para un empleado).
+// Error que se lanza cuando se supera un limite, como los 5 reclamos activos de un empleado.
 public class LimiteExcedidoException extends ReglaNegocioException {
-
     public LimiteExcedidoException(String mensaje) {
         super(mensaje);
     }
