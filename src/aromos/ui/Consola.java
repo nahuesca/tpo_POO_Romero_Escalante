@@ -5,7 +5,7 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 
-// Se encarga de leer datos por teclado (validando que esten bien) y de mostrar mensajes.
+// Entrada y salida por consola para los menus de texto.
 public class Consola {
     private Scanner scanner;
 
@@ -13,6 +13,7 @@ public class Consola {
         this.scanner = scanner;
     }
 
+    // Muestra un titulo.
     public void titulo(String texto) {
         System.out.println();
         System.out.println("=== " + texto + " ===");
@@ -34,7 +35,7 @@ public class Consola {
         System.out.println("[AVISO] " + texto);
     }
 
-    // Muestra una lista, o un mensaje si esta vacia
+    // Muestra una lista o un mensaje si esta vacia.
     public void listar(String mensajeSiVacia, List<?> elementos) {
         if (elementos.isEmpty()) {
             System.out.println("(" + mensajeSiVacia + ")");
@@ -44,11 +45,13 @@ public class Consola {
         }
     }
 
+    // Lee una linea de texto.
     public String leerTexto(String pregunta) {
         System.out.print(pregunta + ": ");
         return scanner.nextLine().trim();
     }
 
+    // Lee un numero entero y repite la pregunta si no es valido.
     public int leerEntero(String pregunta) {
         while (true) {
             String texto = leerTexto(pregunta);
@@ -60,6 +63,7 @@ public class Consola {
         }
     }
 
+    // Lee un numero decimal y repite la pregunta si no es valido.
     public double leerNumero(String pregunta) {
         while (true) {
             String texto = leerTexto(pregunta).replace(',', '.');
@@ -71,7 +75,7 @@ public class Consola {
         }
     }
 
-    // Lee una fecha con formato aaaa-mm-dd. Si se aprieta Enter devuelve la fecha por defecto.
+    // Lee una fecha o usa la de por defecto si no se escribe nada.
     public LocalDate leerFecha(String pregunta, LocalDate porDefecto) {
         while (true) {
             String texto = leerTexto(pregunta + " (aaaa-mm-dd, Enter = " + porDefecto + ")");
@@ -86,7 +90,7 @@ public class Consola {
         }
     }
 
-    // Lee una hora del dia (numero de 0 a 23)
+    // Lee una hora del dia entre 0 y 23.
     public int leerHora(String pregunta) {
         while (true) {
             int hora = leerEntero(pregunta + " (0 a 23)");
@@ -97,6 +101,7 @@ public class Consola {
         }
     }
 
+    // Pregunta si o no y devuelve la respuesta.
     public boolean confirmar(String pregunta) {
         while (true) {
             String texto = leerTexto(pregunta + " (s/n)").toLowerCase();
@@ -110,7 +115,7 @@ public class Consola {
         }
     }
 
-    // Muestra un menu y devuelve el numero elegido (0 = volver o salir)
+    // Muestra un menu y devuelve la opcion elegida.
     public int menu(String titulo, String[] opciones) {
         titulo(titulo);
         for (int i = 0; i < opciones.length; i++) {
@@ -126,7 +131,7 @@ public class Consola {
         }
     }
 
-    // Muestra las opciones numeradas y devuelve la posicion elegida (empieza en 0)
+    // Muestra una lista de opciones y devuelve la posicion elegida.
     public int elegir(String titulo, Object[] opciones) {
         System.out.println(titulo + ":");
         for (int i = 0; i < opciones.length; i++) {
