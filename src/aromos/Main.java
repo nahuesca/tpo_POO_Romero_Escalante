@@ -11,14 +11,13 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 import javax.swing.SwingUtilities;
 
-// Programa principal del sistema del barrio cerrado "Los Aromos".
+// Programa principal: carga o crea los datos del barrio y abre la interfaz grafica o el menu por consola.
 public class Main {
-
+    // Arranca el sistema; con el argumento --consola usa el menu de texto y sin argumentos abre las ventanas.
     public static void main(String[] args) {
         ArchivoDatos archivo = new ArchivoDatos("datos/barrio.dat");
         Consola consola = new Consola(new Scanner(System.in));
 
-        // Si hay datos de una ejecucion anterior se cargan; si no, se usan los datos de prueba.
         Barrio barrio;
         if (archivo.existe()) {
             try {
@@ -33,7 +32,6 @@ public class Main {
             barrio = DatosPrueba.crear();
         }
 
-        // Por defecto se abre la interfaz grafica; con el argumento --consola se usa el menu por consola.
         boolean consolaPedida = args.length > 0 && args[0].equals("--consola");
         if (!consolaPedida) {
             Barrio barrioCargado = barrio;
