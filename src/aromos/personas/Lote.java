@@ -16,8 +16,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+// Parcela del barrio con su titular, residentes, reclamos, expensas y pagos.
 public class Lote implements Serializable {
-    // Con mas de 3 periodos impagos el lote es moroso
     public static final int MAX_PERIODOS_IMPAGOS = 3;
 
     private int numero;
@@ -30,7 +30,6 @@ public class Lote implements Serializable {
     private List<Pago> pagos = new ArrayList<>();
     private boolean moroso;
 
-    // Sin "public": los lotes los crea el Barrio (metodo crearLote).
     Lote(int numero, double superficie, Vecino titular, Barrio barrio) {
         this.numero = numero;
         this.superficie = superficie;
@@ -42,22 +41,24 @@ public class Lote implements Serializable {
         return titular;
     }
 
-    // Coeficiente de participacion: superficie del lote / superficie total del barrio.
+    // Calcula el coeficiente de participacion del lote segun su superficie.
     public double calcularParticipacion() {
         return superficie / barrio.calcularSuperficieTotal();
     }
 
+    // Agrega un residente al lote.
     public void agregarResidente(Vecino residente) {
         if (!residentes.contains(residente) && !titular.equals(residente)) {
             residentes.add(residente);
         }
     }
 
+    // Indica si el vecino es titular o residente del lote.
     public boolean esTitularOResidente(Vecino vecino) {
         return titular.equals(vecino) || residentes.contains(vecino);
     }
 
-    // Regla: solo el titular o un residente autorizado por el titular puede presentar reclamos.
+    // Indica si el vecino puede presentar reclamos por ser titular o estar autorizado.
     public boolean esTitularOAutorizado(Vecino vecino) {
         if (titular.equals(vecino)) {
             return true;
@@ -77,7 +78,7 @@ public class Lote implements Serializable {
         residente.setAutorizadoReclamos(autorizado);
     }
 
-    // GRASP Creador: el lote es quien agrupa los reclamos, por eso es quien los crea.
+    // Crea un reclamo del lote (patron Creador).
     public Reclamo crearReclamo(Vecino autor, TipoReclamo tipo, String descripcion, int ahora) {
         Reclamo reclamo = new Reclamo(barrio.siguienteNumeroReclamo(), this, autor, tipo, descripcion, ahora);
         reclamos.add(reclamo);
@@ -98,8 +99,7 @@ public class Lote implements Serializable {
         return resultado;
     }
 
-    // ---------- expensas y pagos ----------
-
+    // Crea la expensa del lote para un presupuesto mensual.
     public Expensa emitirExpensa(PresupuestoMensual presupuesto) throws ReglaNegocioException {
         for (Expensa e : expensas) {
             if (e.getPeriodo().equals(presupuesto.getPeriodo())) {
@@ -108,10 +108,11 @@ public class Lote implements Serializable {
         }
         Expensa expensa = new Expensa(presupuesto, calcularParticipacion());
         expensas.add(expensa);
-        Collections.sort(expensas); // orden natural: de la mas antigua a la mas nueva
+        Collections.sort(expensas);
         return expensa;
     }
 
+    // Registra un pago y lo reparte entre las expensas pendientes.
     public Pago registrarPago(double importe, MedioPago medio, LocalDate fecha) throws ReglaNegocioException {
         if (importe <= 0) {
             throw new ReglaNegocioException("El importe del pago debe ser mayor a cero");
@@ -125,8 +126,7 @@ public class Lote implements Serializable {
         return pago;
     }
 
-    // Reparte el dinero empezando por la expensa mas antigua.
-    // En cada expensa se paga primero el interes y despues el capital (lo hace Expensa.imputar).
+    // Reparte un pago empezando por la expensa mas antigua.
     private void repartirPago(Pago pago, double monto, LocalDate fecha) {
         double restante = monto;
         for (Expensa e : expensas) {
@@ -141,8 +141,7 @@ public class Lote implements Serializable {
         }
     }
 
-    // Un pago nunca se elimina: si hubo un error se corrige con un asiento de ajuste.
-    // La diferencia puede ser negativa (el pago era menor) o positiva (era mayor).
+    // Corrige un pago con un ajuste y motivo: si es positivo se aplica a la deuda y si es negativo se devuelve capital.
     public void corregirPago(Pago pago, double diferencia, String motivo, LocalDate fecha)
             throws ReglaNegocioException {
         if (!pagos.contains(pago)) {
@@ -168,7 +167,7 @@ public class Lote implements Serializable {
         pago.agregarAjuste(new AjustePago(fecha, diferencia, motivo.trim()));
     }
 
-    // Cuenta las expensas vencidas que todavia no se pagaron.
+    // Cuenta los periodos vencidos que siguen sin pagar.
     public int contarPeriodosImpagos(LocalDate hoy) {
         int cantidad = 0;
         for (Expensa e : expensas) {
@@ -179,7 +178,7 @@ public class Lote implements Serializable {
         return cantidad;
     }
 
-    // Todo lo que debe el lote (capital + intereses), incluidas las expensas que todavia no vencieron.
+    // Calcula todo lo que debe el lote, incluidas las expensas que todavia no vencieron.
     public double calcularDeudaTotal(LocalDate hoy) {
         double total = 0;
         for (Expensa e : expensas) {
@@ -188,7 +187,7 @@ public class Lote implements Serializable {
         return Expensa.redondear(total);
     }
 
-    // Solo lo que ya esta vencido.
+    // Calcula lo que debe el lote solo de las expensas vencidas.
     public double calcularDeudaVencida(LocalDate hoy) {
         double total = 0;
         for (Expensa e : expensas) {
@@ -199,6 +198,7 @@ public class Lote implements Serializable {
         return Expensa.redondear(total);
     }
 
+    // Indica si el lote tiene mas de 3 periodos impagos.
     public boolean determinarSiEsMoroso(LocalDate hoy) {
         return contarPeriodosImpagos(hoy) > MAX_PERIODOS_IMPAGOS;
     }
