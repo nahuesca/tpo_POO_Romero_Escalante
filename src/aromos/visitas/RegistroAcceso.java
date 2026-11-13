@@ -5,7 +5,7 @@ import aromos.personas.Guardia;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-// Un ingreso (y su egreso) de una persona, registrado por un guardia.
+// Registro de la hora de ingreso y de egreso de una persona al barrio.
 public class RegistroAcceso implements Serializable {
     private Autorizacion autorizacion;
     private Guardia guardia;
@@ -21,6 +21,7 @@ public class RegistroAcceso implements Serializable {
         this.horaIngreso = horaIngreso;
     }
 
+    // Registra la hora de salida si la persona todavia estaba dentro.
     public void registrarEgreso(int hora) throws ReglaNegocioException {
         if (salio) {
             throw new ReglaNegocioException("El egreso de esta persona ya fue registrado");
@@ -29,7 +30,7 @@ public class RegistroAcceso implements Serializable {
         salio = true;
     }
 
-    // Abierto = entro y todavia no salio
+    // Indica si la persona entro y todavia no salio.
     public boolean estaAbierto() {
         return !salio;
     }
