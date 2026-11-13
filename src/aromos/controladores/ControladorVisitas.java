@@ -15,7 +15,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-// GRASP Controlador del caso de uso "Registrar el ingreso de visitas y proveedores".
+// Controlador del registro de autorizaciones, ingresos y egresos de visitas y proveedores.
 public class ControladorVisitas {
     private Barrio barrio;
 
@@ -23,7 +23,7 @@ public class ControladorVisitas {
         this.barrio = barrio;
     }
 
-    // El vecino autoriza a una persona indicando fecha y franja horaria.
+    // Un vecino autoriza a una persona a ingresar indicando fecha y franja horaria.
     public Autorizacion autorizarVisita(Vecino vecino, Lote lote, String nombre, String apellido, String documento,
                                         TipoVisitante tipo, LocalDate desde, LocalDate hasta,
                                         int horaDesde, int horaHasta, boolean recurrente)
@@ -49,7 +49,7 @@ public class ControladorVisitas {
         return autorizacion;
     }
 
-    // Busca una autorizacion vigente para ese documento. Si no hay, no se habilita el ingreso.
+    // Busca la autorizacion vigente de un documento y falla si no hay ninguna.
     public Autorizacion buscarAutorizacionVigente(String documento) throws ReglaNegocioException {
         for (Autorizacion a : barrio.consultarAutorizaciones()) {
             boolean mismoDocumento = a.getVisitante().getDocumento().equals(documento);
@@ -61,8 +61,7 @@ public class ControladorVisitas {
                 + ": no se habilita el ingreso");
     }
 
-    // Flujo principal: verificar la autorizacion y registrar la hora de ingreso.
-    // Flujos alternativos: sin autorizacion no entra; si ya tiene un ingreso abierto queda bloqueado.
+    // Verifica la autorizacion y registra la hora de ingreso; sin autorizacion o con un ingreso abierto no entra.
     public RegistroAcceso registrarIngreso(Guardia guardia, String documento) throws ReglaNegocioException {
         if (guardia.getPuesto() != Puesto.PORTERIA) {
             throw new NoAutorizadoException("Solo el guardia de porteria puede registrar ingresos");
@@ -76,6 +75,7 @@ public class ControladorVisitas {
         return registro;
     }
 
+    // Registra la hora de salida de una persona que estaba dentro del barrio.
     public RegistroAcceso registrarEgreso(Guardia guardia, String documento) throws ReglaNegocioException {
         RegistroAcceso registro = barrio.buscarRegistroAbierto(documento);
         if (registro == null) {
@@ -85,7 +85,7 @@ public class ControladorVisitas {
         return registro;
     }
 
-    // Personas que estan dentro del barrio (entraron y todavia no salieron)
+    // Devuelve las personas que entraron y todavia no salieron.
     public List<RegistroAcceso> consultarIngresosAbiertos() {
         List<RegistroAcceso> resultado = new ArrayList<>();
         for (RegistroAcceso r : barrio.consultarRegistros()) {
@@ -96,6 +96,7 @@ public class ControladorVisitas {
         return resultado;
     }
 
+    // Devuelve las autorizaciones que dio un vecino.
     public List<Autorizacion> consultarAutorizacionesDe(Vecino vecino) {
         List<Autorizacion> resultado = new ArrayList<>();
         for (Autorizacion a : barrio.consultarAutorizaciones()) {
