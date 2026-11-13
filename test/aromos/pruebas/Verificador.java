@@ -1,16 +1,17 @@
 package aromos.pruebas;
 
-// Clase simple para hacer las pruebas (no usamos JUnit porque no lo vimos en clase).
-// Cada verificacion imprime [OK] o [FALLA] y al final se muestra un resumen.
+// Herramienta simple para chequear condiciones y contar las pruebas que pasan o fallan.
 public class Verificador {
     private int total;
     private int fallas;
 
+    // Marca el comienzo de un grupo de pruebas.
     public void grupo(String nombre) {
         System.out.println();
         System.out.println("== " + nombre);
     }
 
+    // Registra si una condicion se cumple.
     public void verificar(String descripcion, boolean condicion) {
         total++;
         if (condicion) {
@@ -21,6 +22,7 @@ public class Verificador {
         }
     }
 
+    // Registra si el valor obtenido es igual al esperado.
     public void verificarIgual(String descripcion, Object esperado, Object obtenido) {
         total++;
         if (esperado.equals(obtenido)) {
@@ -31,7 +33,7 @@ public class Verificador {
         }
     }
 
-    // Para comparar numeros con decimales (acepta una diferencia de 1 centavo)
+    // Compara dos numeros con decimales aceptando una diferencia de un centavo.
     public void verificarNumero(String descripcion, double esperado, double obtenido) {
         total++;
         double diferencia = esperado - obtenido;
@@ -43,7 +45,7 @@ public class Verificador {
         }
     }
 
-    // La prueba atrapa la excepcion con try/catch y la pasa aca: tiene que haberse producido un error.
+    // Registra si ocurrio el error que se esperaba.
     public void verificarError(String descripcion, Exception error) {
         total++;
         if (error != null) {
@@ -54,7 +56,7 @@ public class Verificador {
         }
     }
 
-    // Devuelve true si todas las verificaciones salieron bien
+    // Muestra el total de pruebas correctas y fallidas.
     public boolean resumen() {
         System.out.println();
         System.out.println("==========================================");
