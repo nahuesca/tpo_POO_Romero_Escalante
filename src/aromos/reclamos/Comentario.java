@@ -3,7 +3,7 @@ package aromos.reclamos;
 import aromos.personas.Persona;
 import java.io.Serializable;
 
-// Comentario de un vecino o del personal sobre un reclamo.
+// Comentario que una persona deja en un reclamo.
 public class Comentario implements Serializable {
     private int hora;
     private Persona autor;
