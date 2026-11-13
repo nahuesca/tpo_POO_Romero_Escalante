@@ -1,10 +1,10 @@
 package aromos.reclamos;
 
-// Los estados estan en orden: un reclamo solo puede avanzar al estado siguiente.
+// Estados por los que pasa un reclamo, en orden.
 public enum EstadoReclamo {
     ABIERTO, ASIGNADO, EN_CURSO, RESUELTO, CERRADO;
 
-    // Devuelve el estado que sigue, o null si ya es el ultimo.
+    // Devuelve el estado que sigue o null si ya es el ultimo.
     public EstadoReclamo siguiente() {
         EstadoReclamo[] todos = values();
         if (ordinal() + 1 < todos.length) {
