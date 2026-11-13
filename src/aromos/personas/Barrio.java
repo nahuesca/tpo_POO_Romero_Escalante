@@ -14,8 +14,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-// Clase principal del modelo: tiene todas las listas del barrio.
-// Es lo que se guarda y se carga del archivo.
+// Clase principal del modelo: guarda lotes, personas, reclamos, equipos y el reloj simulado del sistema.
 public class Barrio implements Serializable {
     public static final int MAX_LOTES = 150;
     public static final int HORA_INICIAL = 9;
@@ -36,9 +35,6 @@ public class Barrio implements Serializable {
     private int ultimoNumeroReclamo;
     private int ultimoNumeroOrden;
 
-    // Reloj del sistema (simulado). "ahora" cuenta las horas desde el dia en que arranco el sistema:
-    // 0 = las 00:00 de fechaInicio, 33 = las 09:00 del dia siguiente, etc.
-    // Asi las reglas de 24 horas, 48 horas y 5 dias son restas de numeros.
     private LocalDate fechaInicio;
     private int ahora;
 
@@ -48,27 +44,26 @@ public class Barrio implements Serializable {
         this.ahora = HORA_INICIAL;
     }
 
-    // ---------- reloj ----------
-
     public int getAhora() {
         return ahora;
     }
 
+    // Adelanta el reloj simulado del sistema.
     public void avanzarHoras(int horas) {
         ahora = ahora + horas;
     }
 
-    // Fecha de hoy segun el reloj del sistema
+    // Devuelve la fecha actual segun el reloj del sistema.
     public LocalDate hoy() {
         return fechaInicio.plusDays(ahora / 24);
     }
 
-    // Hora del dia (0 a 23)
+    // Devuelve la hora actual del dia segun el reloj del sistema.
     public int horaDelDia() {
         return ahora % 24;
     }
 
-    // Convierte un numero de horas en un texto como "2026-11-02 09:00"
+    // Convierte un numero de horas en un texto como 2026-11-02 09:00.
     public String formatear(int hora) {
         int horaDelDia = hora % 24;
         String texto = fechaInicio.plusDays(hora / 24) + " ";
@@ -78,9 +73,7 @@ public class Barrio implements Serializable {
         return texto + horaDelDia + ":00";
     }
 
-    // ---------- lotes ----------
-
-    // GRASP Creador: el barrio esta formado por lotes, por eso los crea.
+    // Crea un lote del barrio y lo agrega a la lista.
     public Lote crearLote(int numero, double superficie, Vecino titular) throws ReglaNegocioException {
         if (lotes.size() >= MAX_LOTES) {
             throw new ReglaNegocioException("El barrio ya tiene los " + MAX_LOTES + " lotes");
@@ -112,7 +105,7 @@ public class Barrio implements Serializable {
         return null;
     }
 
-    // Lotes en los que el vecino es titular o residente
+    // Devuelve los lotes de los que un vecino es titular.
     public List<Lote> lotesDe(Vecino vecino) {
         List<Lote> resultado = new ArrayList<>();
         for (Lote l : lotes) {
@@ -123,6 +116,7 @@ public class Barrio implements Serializable {
         return resultado;
     }
 
+    // Suma la superficie de todos los lotes.
     public double calcularSuperficieTotal() {
         double total = 0;
         for (Lote l : lotes) {
@@ -131,8 +125,7 @@ public class Barrio implements Serializable {
         return total;
     }
 
-    // ---------- personas ----------
-
+    // Agrega un vecino y evita documentos repetidos.
     public void registrarVecino(Vecino vecino) throws ReglaNegocioException {
         if (buscarVecino(vecino.getDocumento()) != null) {
             throw new ReglaNegocioException("Ya hay un vecino con documento " + vecino.getDocumento());
@@ -149,6 +142,7 @@ public class Barrio implements Serializable {
         return null;
     }
 
+    // Agrega un guardia y evita legajos repetidos.
     public void registrarGuardia(Guardia guardia) throws ReglaNegocioException {
         if (buscarGuardia(guardia.getLegajo()) != null) {
             throw new ReglaNegocioException("Ya hay un guardia con legajo " + guardia.getLegajo());
@@ -165,6 +159,7 @@ public class Barrio implements Serializable {
         return null;
     }
 
+    // Agrega un empleado de mantenimiento y evita legajos repetidos.
     public void registrarEmpleado(EmpleadoMantenimiento empleado) throws ReglaNegocioException {
         if (buscarEmpleado(empleado.getLegajo()) != null) {
             throw new ReglaNegocioException("Ya hay un empleado con legajo " + empleado.getLegajo());
@@ -198,14 +193,13 @@ public class Barrio implements Serializable {
         return null;
     }
 
-    // ---------- reclamos ----------
-
+    // Devuelve el numero que le toca al proximo reclamo.
     public int siguienteNumeroReclamo() {
         ultimoNumeroReclamo++;
         return ultimoNumeroReclamo;
     }
 
-    // Junta los reclamos de todos los lotes
+    // Junta los reclamos de todos los lotes.
     public List<Reclamo> consultarTodosLosReclamos() {
         List<Reclamo> resultado = new ArrayList<>();
         for (Lote l : lotes) {
@@ -223,7 +217,7 @@ public class Barrio implements Serializable {
         return null;
     }
 
-    // Cuenta los reclamos ASIGNADO o EN_CURSO de un empleado
+    // Cuenta los reclamos activos de un integrante del personal.
     public int contarReclamosActivosDe(Personal responsable) {
         int cantidad = 0;
         for (Reclamo r : consultarTodosLosReclamos()) {
@@ -235,8 +229,7 @@ public class Barrio implements Serializable {
         return cantidad;
     }
 
-    // ---------- equipos y ordenes ----------
-
+    // Agrega un equipo y evita codigos repetidos.
     public void registrarEquipo(Equipo equipo) throws ReglaNegocioException {
         if (buscarEquipo(equipo.getCodigo()) != null) {
             throw new ReglaNegocioException("Ya existe un equipo con codigo " + equipo.getCodigo());
@@ -257,7 +250,7 @@ public class Barrio implements Serializable {
         return equipos;
     }
 
-    // Cuenta los equipos del mismo tipo y del mismo sector que no estan operativos (incluye al de referencia)
+    // Cuenta los equipos con falla del mismo tipo y sector que otro equipo.
     public int contarEquiposConFalla(Equipo referencia) {
         int cantidad = 0;
         for (Equipo e : equipos) {
@@ -269,6 +262,7 @@ public class Barrio implements Serializable {
         return cantidad;
     }
 
+    // Devuelve el numero que le toca a la proxima orden de mantenimiento.
     public int siguienteNumeroOrden() {
         ultimoNumeroOrden++;
         return ultimoNumeroOrden;
@@ -291,8 +285,6 @@ public class Barrio implements Serializable {
         return ordenes;
     }
 
-    // ---------- presupuestos ----------
-
     public void agregarPresupuesto(PresupuestoMensual presupuesto) {
         presupuestos.add(presupuesto);
     }
@@ -305,8 +297,6 @@ public class Barrio implements Serializable {
         }
         return null;
     }
-
-    // ---------- visitas ----------
 
     public void agregarAutorizacion(Autorizacion autorizacion) {
         autorizaciones.add(autorizacion);
@@ -324,7 +314,7 @@ public class Barrio implements Serializable {
         return registros;
     }
 
-    // Devuelve el ingreso sin egreso de esa persona, o null si no tiene ninguno abierto
+    // Busca el ingreso de una persona que todavia no salio.
     public RegistroAcceso buscarRegistroAbierto(String documentoVisitante) {
         for (RegistroAcceso r : registros) {
             if (r.estaAbierto() && r.getAutorizacion().getVisitante().getDocumento().equals(documentoVisitante)) {
@@ -334,12 +324,12 @@ public class Barrio implements Serializable {
         return null;
     }
 
-    // ---------- notificaciones (se muestran dentro del sistema) ----------
-
+    // Guarda un aviso para una persona.
     public void notificar(Persona destinatario, String mensaje) {
         notificaciones.add(new Notificacion(ahora, destinatario, mensaje));
     }
 
+    // Devuelve los avisos de una persona.
     public List<Notificacion> consultarNotificaciones(Persona destinatario) {
         List<Notificacion> resultado = new ArrayList<>();
         for (Notificacion n : notificaciones) {
@@ -350,6 +340,7 @@ public class Barrio implements Serializable {
         return resultado;
     }
 
+    // Define quien es el administrador del barrio.
     public void designarAdministrador(Administrador administrador) {
         this.administrador = administrador;
     }
