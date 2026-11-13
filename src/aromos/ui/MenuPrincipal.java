@@ -15,8 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-// Menu de entrada: la persona elige su rol, se identifica y se abre el menu de ese rol.
-// La identificacion es simple (documento o legajo, sin contrasena).
+// Menu de consola de entrada: identifica al usuario por documento o legajo y abre el menu de su rol.
 public class MenuPrincipal {
     private Barrio barrio;
     private ArchivoDatos archivo;
@@ -28,6 +27,7 @@ public class MenuPrincipal {
         this.consola = consola;
     }
 
+    // Muestra el menu de entrada hasta que se elige salir.
     public void ejecutar() {
         String[] opciones = {
             "Ingresar como VECINO (con el documento)",
@@ -59,11 +59,11 @@ public class MenuPrincipal {
                 guardar();
             } while (opcion != 0);
         } finally {
-            // Pase lo que pase (aunque el programa falle) los datos se guardan.
             guardar();
         }
     }
 
+    // Identifica a un vecino por documento y abre su menu.
     private void ingresarVecino() {
         String documento = consola.leerTexto("Documento");
         Vecino vecino = barrio.buscarVecino(documento);
@@ -76,6 +76,7 @@ public class MenuPrincipal {
         }
     }
 
+    // Abre el menu del administrador.
     private void ingresarAdministrador() {
         int legajo = consola.leerEntero("Legajo");
         Administrador administrador = barrio.getAdministrador();
@@ -86,6 +87,7 @@ public class MenuPrincipal {
         }
     }
 
+    // Identifica a un guardia por legajo y abre su menu.
     private void ingresarGuardia() {
         Guardia guardia = barrio.buscarGuardia(consola.leerEntero("Legajo"));
         if (guardia == null) {
@@ -95,6 +97,7 @@ public class MenuPrincipal {
         }
     }
 
+    // Identifica a un empleado por legajo y abre su menu.
     private void ingresarEmpleado() {
         EmpleadoMantenimiento empleado = barrio.buscarEmpleado(consola.leerEntero("Legajo"));
         if (empleado == null) {
@@ -104,7 +107,7 @@ public class MenuPrincipal {
         }
     }
 
-    // Permite mostrar las reglas que dependen del tiempo (24 horas, 48 horas, 5 dias) sin esperar.
+    // Adelanta el reloj simulado y aplica las reglas automaticas.
     private void avanzarTiempo() {
         int horas = consola.leerEntero("Cuantas horas quiere avanzar (24 = un dia, 48 = dos dias)");
         try {
@@ -117,8 +120,7 @@ public class MenuPrincipal {
         ejecutarReglasAutomaticas();
     }
 
-    // Lo que hace el "Sistema" por su cuenta: escalar reclamos, cerrar reclamos resueltos,
-    // marcar lotes morosos y avisar de camaras sin funcionar.
+    // Aplica las reglas que dependen del tiempo, como morosidad y escalado de reclamos.
     private void ejecutarReglasAutomaticas() {
         List<String> mensajes = new ArrayList<>();
         mensajes.addAll(new ControladorReclamos(barrio).ejecutarReglasAutomaticas());
@@ -129,6 +131,7 @@ public class MenuPrincipal {
         }
     }
 
+    // Guarda los datos del barrio en el archivo.
     private void guardar() {
         try {
             archivo.guardar(barrio);
