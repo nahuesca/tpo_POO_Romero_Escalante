@@ -22,6 +22,7 @@ import aromos.reclamos.Reclamo;
 import java.time.LocalDate;
 import java.util.List;
 
+// Menu de consola de las tareas del administrador.
 public class MenuAdministrador extends MenuBase {
     private Administrador administrador;
     private ControladorReclamos reclamos;
@@ -45,6 +46,7 @@ public class MenuAdministrador extends MenuBase {
         return "ADMINISTRADOR: " + administrador.getNombre() + " " + administrador.getApellido();
     }
 
+    // Devuelve las opciones del menu del administrador.
     @Override
     public String[] opciones() {
         return new String[] {
@@ -68,6 +70,7 @@ public class MenuAdministrador extends MenuBase {
         };
     }
 
+    // Ejecuta la accion de la opcion elegida.
     @Override
     public void ejecutarOpcion(int opcion) {
         switch (opcion) {
@@ -92,13 +95,13 @@ public class MenuAdministrador extends MenuBase {
         }
     }
 
-    // ---------- reclamos ----------
-
+    // Muestra los reclamos pendientes.
     private void reportePendientes() {
         consola.titulo("Reclamos pendientes (primero los de mayor prioridad)");
         consola.listar("no hay reclamos pendientes", reportes.reclamosPendientes());
     }
 
+    // Pide los datos y asigna un reclamo a un empleado.
     private void asignarReclamo() {
         Reclamo reclamo = pedirReclamo();
         if (reclamo == null) {
@@ -115,6 +118,7 @@ public class MenuAdministrador extends MenuBase {
         }
     }
 
+    // Pide los datos y cierra un reclamo resuelto.
     private void cerrarReclamo() {
         Reclamo reclamo = pedirReclamo();
         if (reclamo == null) {
@@ -129,6 +133,7 @@ public class MenuAdministrador extends MenuBase {
         }
     }
 
+    // Muestra el detalle completo de un reclamo.
     private void verDetalleReclamo() {
         Reclamo reclamo = pedirReclamo();
         if (reclamo != null) {
@@ -136,8 +141,7 @@ public class MenuAdministrador extends MenuBase {
         }
     }
 
-    // ---------- expensas ----------
-
+    // Pide el periodo y el presupuesto y emite las expensas.
     private void emitirExpensas() {
         int anio = consola.leerEntero("Anio (ejemplo: " + barrio.hoy().getYear() + ")");
         int mes = consola.leerEntero("Mes (1 a 12)");
@@ -150,6 +154,7 @@ public class MenuAdministrador extends MenuBase {
         }
     }
 
+    // Pide los datos y registra el pago de un lote.
     private void registrarPago() {
         Lote lote = pedirLote();
         if (lote == null) {
@@ -167,6 +172,7 @@ public class MenuAdministrador extends MenuBase {
         }
     }
 
+    // Pide los datos y corrige un pago con un ajuste.
     private void corregirPago() {
         Lote lote = pedirLote();
         if (lote == null) {
@@ -188,6 +194,7 @@ public class MenuAdministrador extends MenuBase {
         }
     }
 
+    // Muestra las deudas de un lote.
     private void consultarDeudasDeLote() {
         Lote lote = pedirLote();
         if (lote != null) {
@@ -195,6 +202,7 @@ public class MenuAdministrador extends MenuBase {
         }
     }
 
+    // Muestra los lotes morosos.
     private void reporteMorosidad() {
         LocalDate hoy = barrio.hoy();
         consola.titulo("Morosidad por lote (primero los que mas deben)");
@@ -213,8 +221,7 @@ public class MenuAdministrador extends MenuBase {
         }
     }
 
-    // ---------- mantenimiento ----------
-
+    // Pide los datos y da de alta una camara o luminaria.
     private void registrarEquipo() {
         String[] tipos = {"Camara", "Luminaria"};
         int tipo = consola.elegir("Tipo de equipo", tipos);
@@ -237,6 +244,7 @@ public class MenuAdministrador extends MenuBase {
         }
     }
 
+    // Genera una orden de mantenimiento para un equipo con falla.
     private void generarOrden() {
         consola.titulo("Equipos con falla y sin orden de mantenimiento");
         List<Equipo> pendientes = mantenimiento.consultarEquiposSinOrden();
@@ -257,6 +265,7 @@ public class MenuAdministrador extends MenuBase {
         }
     }
 
+    // Asigna una orden de mantenimiento a un empleado.
     private void asignarOrden() {
         consola.titulo("Ordenes de mantenimiento");
         consola.listar("no hay ordenes", barrio.consultarOrdenes());
@@ -274,6 +283,7 @@ public class MenuAdministrador extends MenuBase {
         }
     }
 
+    // Cambia el estado de un equipo.
     private void cambiarEstadoEquipo() {
         Equipo equipo = pedirEquipo();
         if (equipo == null) {
@@ -288,13 +298,13 @@ public class MenuAdministrador extends MenuBase {
         }
     }
 
+    // Muestra los equipos que no estan operativos.
     private void reporteEquipos() {
         consola.titulo("Equipos fuera de servicio (con falla, en reparacion o fuera de servicio)");
         consola.listar("todos los equipos estan operativos", reportes.equiposFueraDeServicio());
     }
 
-    // ---------- altas ----------
-
+    // Submenu para dar de alta vecinos, lotes, residentes y personal.
     private void menuAltas() {
         String[] opciones = {"Registrar un vecino", "Crear un lote", "Agregar un residente a un lote",
             "Registrar un guardia", "Registrar un empleado de mantenimiento", "Ver los lotes del barrio"};
@@ -313,6 +323,7 @@ public class MenuAdministrador extends MenuBase {
         } while (opcion != 0);
     }
 
+    // Pide los datos y da de alta un vecino.
     private void registrarVecino() {
         String nombre = consola.leerTexto("Nombre");
         String apellido = consola.leerTexto("Apellido");
@@ -327,6 +338,7 @@ public class MenuAdministrador extends MenuBase {
         }
     }
 
+    // Pide los datos y crea un lote.
     private void crearLote() {
         int numero = consola.leerEntero("Numero de lote");
         double superficie = consola.leerNumero("Superficie en m2");
@@ -339,6 +351,7 @@ public class MenuAdministrador extends MenuBase {
         }
     }
 
+    // Agrega un residente a un lote.
     private void agregarResidente() {
         Lote lote = pedirLote();
         if (lote == null) {
@@ -354,6 +367,7 @@ public class MenuAdministrador extends MenuBase {
         }
     }
 
+    // Pide los datos y da de alta un guardia.
     private void registrarGuardia() {
         String nombre = consola.leerTexto("Nombre");
         String apellido = consola.leerTexto("Apellido");
@@ -369,6 +383,7 @@ public class MenuAdministrador extends MenuBase {
         }
     }
 
+    // Pide los datos y da de alta un empleado de mantenimiento.
     private void registrarEmpleado() {
         String nombre = consola.leerTexto("Nombre");
         String apellido = consola.leerTexto("Apellido");
