@@ -9,8 +9,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+// Pruebas de la presentacion y gestion de reclamos.
 public class PruebasReclamos {
-
+    // Corre todas las pruebas de reclamos.
     public void ejecutar(Verificador v) throws Exception {
         prioridadPorTipo(v);
         estadosSoloAvanzan(v);
@@ -21,6 +22,7 @@ public class PruebasReclamos {
         ordenNatural(v);
     }
 
+    // Prueba la prioridad de cada tipo de reclamo.
     private void prioridadPorTipo(Verificador v) throws Exception {
         v.grupo("Reclamos: prioridad segun el tipo");
         Escenario e = new Escenario();
@@ -34,6 +36,7 @@ public class PruebasReclamos {
         v.verificarIgual("El reclamo nace ABIERTO", EstadoReclamo.ABIERTO, seguridad.getEstado());
     }
 
+    // Prueba que los estados solo avanzan al siguiente.
     private void estadosSoloAvanzan(Verificador v) throws Exception {
         v.grupo("Reclamos: los estados solo avanzan al siguiente");
         Escenario e = new Escenario();
@@ -63,6 +66,7 @@ public class PruebasReclamos {
         v.verificarError("Solo el responsable puede actualizar el reclamo", error);
     }
 
+    // Prueba quien puede presentar reclamos.
     private void quienPuedeReclamar(Verificador v) throws Exception {
         v.grupo("Reclamos: solo el titular o una persona autorizada puede reclamar");
         Escenario e = new Escenario();
@@ -102,6 +106,7 @@ public class PruebasReclamos {
         v.verificarIgual("Los reclamos rechazados no se crean", 2, e.lote1.consultarReclamos().size());
     }
 
+    // Prueba el limite de 5 reclamos activos por empleado.
     private void limiteDeCincoReclamos(Verificador v) throws Exception {
         v.grupo("Reclamos: ningun empleado puede tener mas de 5 en curso");
         Escenario e = new Escenario();
@@ -125,7 +130,7 @@ public class PruebasReclamos {
         v.verificarIgual("El reclamo rechazado sigue ABIERTO", EstadoReclamo.ABIERTO, lista.get(5).getEstado());
     }
 
-    // Crea un reclamo y lo deja RESUELTO
+    // Crea un reclamo ya resuelto para usar en otras pruebas.
     private Reclamo crearResuelto(Escenario e, ControladorReclamos c) throws Exception {
         Reclamo r = c.presentarReclamo(e.titular1, e.lote1, TipoReclamo.MANTENIMIENTO, "caneria");
         c.asignarReclamo(e.admin, r, e.plomero);
@@ -134,6 +139,7 @@ public class PruebasReclamos {
         return r;
     }
 
+    // Prueba la reapertura y el cierre de reclamos.
     private void reaperturaYCierre(Verificador v) throws Exception {
         v.grupo("Reclamos: reabrir dentro de 5 dias y cierre automatico");
         Escenario e = new Escenario();
@@ -142,12 +148,12 @@ public class PruebasReclamos {
         Reclamo dentroDelPlazo = crearResuelto(e, c);
         Reclamo fueraDelPlazo = crearResuelto(e, c);
 
-        e.barrio.avanzarHoras(5 * 24); // pasaron justo 5 dias
+        e.barrio.avanzarHoras(5 * 24);
         c.reabrirReclamo(e.titular1, dentroDelPlazo);
         v.verificarIgual("A los 5 dias todavia se puede reabrir (queda EN_CURSO)", EstadoReclamo.EN_CURSO,
                 dentroDelPlazo.getEstado());
 
-        e.barrio.avanzarHoras(1); // paso una hora mas del plazo
+        e.barrio.avanzarHoras(1);
         Exception error = null;
         try {
             c.reabrirReclamo(e.titular1, fueraDelPlazo);
@@ -161,6 +167,7 @@ public class PruebasReclamos {
                 fueraDelPlazo.getEstado());
     }
 
+    // Prueba el escalado de reclamos de prioridad alta.
     private void escalado(Verificador v) throws Exception {
         v.grupo("Reclamos: escalado al administrador a las 24 horas");
         Escenario e = new Escenario();
@@ -178,6 +185,7 @@ public class PruebasReclamos {
                 e.barrio.consultarNotificaciones(e.admin).size());
     }
 
+    // Prueba el orden de los reclamos.
     private void ordenNatural(Verificador v) throws Exception {
         v.grupo("Reclamos: orden natural (Comparable) por numero");
         Escenario e = new Escenario();
