@@ -7,6 +7,7 @@ import aromos.personas.Guardia;
 import aromos.visitas.Autorizacion;
 import aromos.visitas.RegistroAcceso;
 
+// Menu de consola del guardia de seguridad.
 public class MenuGuardia extends MenuBase {
     private Guardia guardia;
     private ControladorVisitas visitas;
@@ -22,6 +23,7 @@ public class MenuGuardia extends MenuBase {
         return "GUARDIA: " + guardia.getNombre() + " " + guardia.getApellido() + " (" + guardia.getPuesto() + ")";
     }
 
+    // Devuelve las opciones del menu del guardia.
     @Override
     public String[] opciones() {
         return new String[] {
@@ -34,6 +36,7 @@ public class MenuGuardia extends MenuBase {
         };
     }
 
+    // Ejecuta la accion de la opcion elegida.
     @Override
     public void ejecutarOpcion(int opcion) {
         switch (opcion) {
@@ -47,6 +50,7 @@ public class MenuGuardia extends MenuBase {
         }
     }
 
+    // Registra el ingreso de una persona verificando su autorizacion.
     private void registrarIngreso() {
         String documento = consola.leerTexto("Documento de la persona que llega");
         try {
@@ -59,6 +63,7 @@ public class MenuGuardia extends MenuBase {
         }
     }
 
+    // Registra la salida de una persona.
     private void registrarEgreso() {
         String documento = consola.leerTexto("Documento de la persona que se retira");
         try {
@@ -69,11 +74,13 @@ public class MenuGuardia extends MenuBase {
         }
     }
 
+    // Muestra las personas que estan dentro del barrio.
     private void verPersonasAdentro() {
         consola.titulo("Personas dentro del barrio");
         consola.listar("no hay nadie dentro del barrio", visitas.consultarIngresosAbiertos());
     }
 
+    // Muestra el historial de accesos.
     private void verHistorial() {
         consola.titulo("Historial de accesos");
         consola.listar("no hay accesos registrados", barrio.consultarRegistros());
