@@ -1,14 +1,15 @@
 package aromos.personas;
 
+// Persona externa que ingresa al barrio con una autorizacion.
 public class Visitante extends Persona {
     private TipoVisitante tipo;
 
     public Visitante(String nombre, String apellido, String documento, TipoVisitante tipo) {
-        // de un visitante solo se piden nombre, apellido y documento
         super(nombre, apellido, documento, "", "");
         this.tipo = tipo;
     }
 
+    // Devuelve el nombre del rol, VISITANTE.
     @Override
     public String obtenerRol() {
         return "Visitante (" + tipo + ")";
