@@ -3,7 +3,7 @@ package aromos.expensas;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-// Asiento de ajuste: corrige un pago sin eliminarlo. El importe puede ser positivo o negativo.
+// Correccion de un pago con su fecha, importe y motivo; los pagos nunca se borran.
 public class AjustePago implements Serializable {
     private LocalDate fecha;
     private double importe;
