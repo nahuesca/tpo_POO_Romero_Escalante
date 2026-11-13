@@ -4,10 +4,11 @@ import aromos.controladores.ControladorVisitas;
 import aromos.personas.TipoVisitante;
 import java.time.LocalDate;
 
-// El reloj de las pruebas arranca el 2026-03-02 a las 9 hs.
+// Pruebas de autorizaciones, ingresos y egresos de visitas.
 public class PruebasVisitas {
     private static final LocalDate HOY = LocalDate.of(2026, 3, 2);
 
+    // Corre todas las pruebas de visitas.
     public void ejecutar(Verificador v) throws Exception {
         ingresoYEgreso(v);
         sinAutorizacion(v);
@@ -15,12 +16,13 @@ public class PruebasVisitas {
         autorizacionesRecurrentes(v);
     }
 
-    // Autorizacion para hoy, de 9 a 18 hs
+    // Crea la autorizacion de una visita particular para las pruebas.
     private void autorizarParticular(Escenario e, ControladorVisitas c, String documento) throws Exception {
         c.autorizarVisita(e.titular1, e.lote1, "Roberto", "Paz", documento, TipoVisitante.PARTICULAR,
                 HOY, HOY, 9, 18, false);
     }
 
+    // Prueba el ingreso y la salida de una visita.
     private void ingresoYEgreso(Verificador v) throws Exception {
         v.grupo("Visitas: ingreso y egreso con autorizacion vigente");
         Escenario e = new Escenario();
@@ -37,6 +39,7 @@ public class PruebasVisitas {
         v.verificarIgual("Ya no figura adentro", 0, c.consultarIngresosAbiertos().size());
     }
 
+    // Prueba que no entra quien no tiene autorizacion.
     private void sinAutorizacion(Verificador v) throws Exception {
         v.grupo("Visitas: sin autorizacion vigente no se habilita el ingreso");
         Escenario e = new Escenario();
@@ -59,7 +62,7 @@ public class PruebasVisitas {
         }
         v.verificarError("Solo el guardia de porteria registra ingresos", error);
 
-        e.barrio.avanzarHoras(11); // ahora son las 20 hs y la autorizacion es de 9 a 18
+        e.barrio.avanzarHoras(11);
         error = null;
         try {
             c.registrarIngreso(e.porteria, "4001");
@@ -78,6 +81,7 @@ public class PruebasVisitas {
         v.verificarError("Una persona ajena al lote no puede autorizar visitas", error);
     }
 
+    // Prueba el bloqueo de quien ya tiene un ingreso abierto.
     private void ingresoSinEgreso(Verificador v) throws Exception {
         v.grupo("Visitas: no se puede ingresar dos veces sin haber salido");
         Escenario e = new Escenario();
@@ -103,6 +107,7 @@ public class PruebasVisitas {
         v.verificar("Despues de registrar el egreso puede volver a entrar", error == null);
     }
 
+    // Prueba las autorizaciones que se repiten.
     private void autorizacionesRecurrentes(Verificador v) throws Exception {
         v.grupo("Visitas: proveedores habituales con autorizacion de hasta 30 dias");
         Escenario e = new Escenario();
