@@ -6,15 +6,14 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-// Clase abstracta: un equipo del barrio puede ser una Camara o una Luminaria.
-// Si se agrega otro tipo de equipo, se crea otra subclase y no hay que tocar el resto del codigo.
+// Clase abstracta de un equipo del barrio, que puede ser una camara o una luminaria.
 public abstract class Equipo implements Serializable {
     private String codigo;
     private Sector sector;
     private LocalDate instalacion;
     private EstadoEquipo estado = EstadoEquipo.OPERATIVO;
-    private int horaFalla;            // hora (del reloj del sistema) en que dejo de funcionar
-    private boolean avisoEnviado;     // para avisar una sola vez al administrador
+    private int horaFalla;
+    private boolean avisoEnviado;
     private List<OrdenMantenimiento> ordenes = new ArrayList<>();
 
     protected Equipo(String codigo, Sector sector, LocalDate instalacion) {
@@ -23,18 +22,16 @@ public abstract class Equipo implements Serializable {
         this.instalacion = instalacion;
     }
 
-    // Cada subclase decide la prioridad de su falla (se sobreescribe).
-    // Recibe cuantos equipos de su tipo y sector estan fallando.
     public abstract PrioridadOrden prioridadFalla(int fallasEnElSector);
 
-    // Nombre del tipo de equipo, para mostrar
     public abstract String getTipo();
 
-    // Por defecto no se avisa nada; la camara lo sobreescribe.
+    // Por defecto un equipo no requiere aviso; las subclases pueden cambiarlo.
     public boolean requiereAviso(int ahora) {
         return false;
     }
 
+    // Registra la falla del equipo y guarda la hora en que ocurrio.
     public void registrarFalla(int ahora) throws ReglaNegocioException {
         if (estado != EstadoEquipo.OPERATIVO) {
             throw new ReglaNegocioException("El equipo " + codigo + " ya tiene una falla registrada (" + estado + ")");
@@ -42,23 +39,27 @@ public abstract class Equipo implements Serializable {
         cambiarEstado(EstadoEquipo.CON_FALLA, ahora);
     }
 
+    // Cambia el estado del equipo y registra la hora del cambio.
     public void cambiarEstado(EstadoEquipo nuevoEstado, int ahora) {
         if (nuevoEstado == EstadoEquipo.OPERATIVO) {
             avisoEnviado = false;
         } else if (estado == EstadoEquipo.OPERATIVO) {
-            horaFalla = ahora; // empieza a contar el tiempo sin funcionar
+            horaFalla = ahora;
         }
         estado = nuevoEstado;
     }
 
+    // Indica si el equipo esta funcionando.
     public boolean estaOperativo() {
         return estado == EstadoEquipo.OPERATIVO;
     }
 
+    // Marca que ya se aviso al administrador para no avisar dos veces.
     public void marcarAvisoEnviado() {
         avisoEnviado = true;
     }
 
+    // Agrega una orden de mantenimiento al historial del equipo.
     public void agregarOrden(OrdenMantenimiento orden) {
         ordenes.add(orden);
     }
