@@ -2,7 +2,7 @@ package aromos.expensas;
 
 import java.io.Serializable;
 
-// Presupuesto total del barrio para un mes. Se reparte entre los lotes segun su coeficiente.
+// Presupuesto total del barrio para un mes, que se reparte entre los lotes.
 public class PresupuestoMensual implements Serializable {
     private int anio;
     private int mes;
@@ -14,12 +14,11 @@ public class PresupuestoMensual implements Serializable {
         this.total = total;
     }
 
-    // Lo que paga un lote: presupuesto x coeficiente de participacion
+    // Calcula la parte del presupuesto que le toca a un lote segun su coeficiente.
     public double calcularExpensa(double coeficiente) {
         return Expensa.redondear(total * coeficiente);
     }
 
-    // Texto como "2026-11"
     public String getPeriodo() {
         if (mes < 10) {
             return anio + "-0" + mes;
