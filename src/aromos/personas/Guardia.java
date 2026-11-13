@@ -5,6 +5,7 @@ import aromos.visitas.Autorizacion;
 import aromos.visitas.RegistroAcceso;
 import java.time.LocalDate;
 
+// Personal de seguridad que controla el ingreso y egreso de visitas.
 public class Guardia extends Personal {
     private String turno;
     private Puesto puesto;
@@ -16,17 +17,18 @@ public class Guardia extends Personal {
         this.puesto = puesto;
     }
 
+    // Devuelve el nombre del rol, GUARDIA.
     @Override
     public String obtenerRol() {
         return "Guardia (" + puesto + ")";
     }
 
-    // Consulta si la autorizacion esta vigente en este momento.
+    // Indica si la autorizacion esta vigente para habilitar el ingreso.
     public boolean verificarAutorizacion(Autorizacion autorizacion, LocalDate hoy, int hora) {
         return autorizacion != null && autorizacion.estaVigente(hoy, hora);
     }
 
-    // Sin autorizacion vigente no se habilita el ingreso.
+    // Registra la entrada de una persona al barrio.
     public RegistroAcceso registrarIngreso(Autorizacion autorizacion, LocalDate hoy, int hora)
             throws ReglaNegocioException {
         if (!verificarAutorizacion(autorizacion, hoy, hora)) {
@@ -35,6 +37,7 @@ public class Guardia extends Personal {
         return new RegistroAcceso(autorizacion, this, hoy, hora);
     }
 
+    // Registra la salida de una persona del barrio.
     public void registrarEgreso(RegistroAcceso registro, int hora) throws ReglaNegocioException {
         registro.registrarEgreso(hora);
     }
