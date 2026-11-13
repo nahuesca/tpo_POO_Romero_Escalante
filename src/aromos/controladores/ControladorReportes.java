@@ -9,8 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-// Reportes del administrador. Si no hay datos devuelven una lista vacia
-// y el menu muestra un mensaje explicativo.
+// Genera los reportes del administrador sobre reclamos, morosidad y equipos.
 public class ControladorReportes {
     private Barrio barrio;
 
@@ -18,7 +17,7 @@ public class ControladorReportes {
         this.barrio = barrio;
     }
 
-    // Reclamos que todavia no se resolvieron, ordenados por prioridad y antiguedad
+    // Devuelve los reclamos sin resolver ordenados por prioridad y antiguedad.
     public List<Reclamo> reclamosPendientes() {
         List<Reclamo> pendientes = new ArrayList<>();
         for (Reclamo r : barrio.consultarTodosLosReclamos()) {
@@ -30,7 +29,7 @@ public class ControladorReportes {
         return pendientes;
     }
 
-    // Lotes con deuda vencida, primero los que mas deben
+    // Devuelve los lotes con deuda vencida, primero los que mas deben.
     public List<Lote> morosidadPorLote(LocalDate hoy) {
         List<Lote> resultado = new ArrayList<>();
         for (Lote lote : barrio.consultarLotes()) {
@@ -42,7 +41,7 @@ public class ControladorReportes {
         return resultado;
     }
 
-    // Equipos que no estan operativos (con falla, en reparacion o fuera de servicio)
+    // Devuelve los equipos que no estan operativos.
     public List<Equipo> equiposFueraDeServicio() {
         List<Equipo> resultado = new ArrayList<>();
         for (Equipo e : barrio.consultarEquipos()) {
