@@ -8,9 +8,11 @@ import aromos.reclamos.Reclamo;
 import aromos.reclamos.TipoReclamo;
 import java.io.File;
 
+// Pruebas de guardado y carga de datos.
 public class PruebasPersistencia {
     private static final String RUTA = "datos/prueba_temporal.dat";
 
+    // Prueba que lo guardado se carga igual.
     public void ejecutar(Verificador v) throws Exception {
         v.grupo("Persistencia: guardar y cargar el barrio en un archivo");
         ArchivoDatos archivo = new ArchivoDatos(RUTA);
@@ -30,7 +32,6 @@ public class PruebasPersistencia {
         v.verificar("Los objetos siguen relacionados (el reclamo conoce a su lote)",
                 cargado.buscarLote(1).consultarReclamos().get(0).getLote() == cargado.buscarLote(1));
 
-        // se agrega un reclamo, se guarda y se vuelve a cargar: el cambio tiene que seguir ahi
         int cantidad = cargado.consultarTodosLosReclamos().size();
         new ControladorReclamos(cargado).presentarReclamo(cargado.buscarVecino("30000003"), cargado.buscarLote(3),
                 TipoReclamo.CONVIVENCIA, "Ruido de obra");
