@@ -28,8 +28,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-// Ventana de entrada: se elige el rol y se escribe el documento (vecino) o el legajo (personal).
-// Al ingresar se abre la ventana de ese rol (VentanaRol).
+// Ventana de entrada: se elige el rol y se escribe el documento o el legajo para abrir la ventana del rol.
 public class VentanaPrincipal extends JFrame implements ActionListener {
     private Barrio barrio;
     private ArchivoDatos archivo;
@@ -95,13 +94,12 @@ public class VentanaPrincipal extends JFrame implements ActionListener {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Igual que en la consola, al abrir el sistema se aplican las reglas automaticas.
         ejecutarReglasAutomaticas();
         guardar();
         actualizarFecha();
     }
 
-    // Se ejecuta cada vez que se aprieta un boton
+    // Responde a cada boton de la ventana.
     @Override
     public void actionPerformed(ActionEvent e) {
         try {
@@ -125,6 +123,7 @@ public class VentanaPrincipal extends JFrame implements ActionListener {
         actualizarFecha();
     }
 
+    // Identifica a un vecino por documento y abre su ventana.
     private void ingresarVecino() {
         String documento = consola.leerTexto("Documento");
         Vecino vecino = barrio.buscarVecino(documento);
@@ -137,6 +136,7 @@ public class VentanaPrincipal extends JFrame implements ActionListener {
         }
     }
 
+    // Abre la ventana del administrador.
     private void ingresarAdministrador() {
         int legajo = consola.leerEntero("Legajo");
         Administrador administrador = barrio.getAdministrador();
@@ -147,6 +147,7 @@ public class VentanaPrincipal extends JFrame implements ActionListener {
         }
     }
 
+    // Identifica a un guardia por legajo y abre su ventana.
     private void ingresarGuardia() {
         Guardia guardia = barrio.buscarGuardia(consola.leerEntero("Legajo"));
         if (guardia == null) {
@@ -156,6 +157,7 @@ public class VentanaPrincipal extends JFrame implements ActionListener {
         }
     }
 
+    // Identifica a un empleado por legajo y abre su ventana.
     private void ingresarEmpleado() {
         EmpleadoMantenimiento empleado = barrio.buscarEmpleado(consola.leerEntero("Legajo"));
         if (empleado == null) {
@@ -165,11 +167,12 @@ public class VentanaPrincipal extends JFrame implements ActionListener {
         }
     }
 
+    // Abre la ventana de un rol.
     private void abrirVentana(MenuBase menu) {
         new VentanaRol(menu, barrio, archivo).setVisible(true);
     }
 
-    // Permite mostrar las reglas que dependen del tiempo (24 horas, 48 horas, 5 dias) sin esperar.
+    // Adelanta el reloj simulado para mostrar las reglas que dependen del tiempo.
     private void avanzarTiempo() {
         int horas = consola.leerEntero("Cuantas horas quiere avanzar (24 = un dia, 48 = dos dias)");
         try {
@@ -182,8 +185,7 @@ public class VentanaPrincipal extends JFrame implements ActionListener {
         ejecutarReglasAutomaticas();
     }
 
-    // Lo que hace el "Sistema" por su cuenta: escalar reclamos, cerrar reclamos resueltos,
-    // marcar lotes morosos y avisar de camaras sin funcionar.
+    // Aplica las reglas automaticas y muestra lo que hicieron.
     private void ejecutarReglasAutomaticas() {
         List<String> mensajes = new ArrayList<>();
         mensajes.addAll(new ControladorReclamos(barrio).ejecutarReglasAutomaticas());
@@ -194,10 +196,12 @@ public class VentanaPrincipal extends JFrame implements ActionListener {
         }
     }
 
+    // Actualiza en pantalla la fecha del sistema.
     private void actualizarFecha() {
         lblFecha.setText("Fecha del sistema: " + barrio.formatear(barrio.getAhora()));
     }
 
+    // Guarda los datos del barrio en el archivo.
     private void guardar() {
         try {
             archivo.guardar(barrio);
