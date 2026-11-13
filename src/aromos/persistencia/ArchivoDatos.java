@@ -8,8 +8,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-// Guarda y carga todo el barrio en un archivo, usando serializacion de objetos.
-// Todas las clases del modelo implementan Serializable.
+// Guarda y carga el barrio completo en un archivo mediante serializacion.
 public class ArchivoDatos {
     private String ruta;
 
@@ -17,10 +16,12 @@ public class ArchivoDatos {
         this.ruta = ruta;
     }
 
+    // Indica si ya existe el archivo de datos.
     public boolean existe() {
         return new File(ruta).exists();
     }
 
+    // Guarda el barrio en el archivo, creando la carpeta si hace falta.
     public void guardar(Barrio barrio) throws IOException {
         File carpeta = new File(ruta).getAbsoluteFile().getParentFile();
         if (!carpeta.exists()) {
@@ -32,7 +33,7 @@ public class ArchivoDatos {
         }
     }
 
-    // readObject devuelve Object, por eso hay que hacer el cast a Barrio.
+    // Lee el archivo y devuelve el barrio guardado.
     public Barrio cargar() throws IOException, ClassNotFoundException {
         try (FileInputStream archivo = new FileInputStream(ruta);
              ObjectInputStream entrada = new ObjectInputStream(archivo)) {
