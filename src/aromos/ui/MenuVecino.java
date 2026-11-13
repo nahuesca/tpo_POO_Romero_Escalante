@@ -17,6 +17,7 @@ import aromos.visitas.Autorizacion;
 import java.time.LocalDate;
 import java.util.List;
 
+// Menu de consola del vecino.
 public class MenuVecino extends MenuBase {
     private Vecino vecino;
     private ControladorReclamos reclamos;
@@ -38,6 +39,7 @@ public class MenuVecino extends MenuBase {
         return "VECINO: " + vecino.getNombre() + " " + vecino.getApellido();
     }
 
+    // Devuelve las opciones del menu del vecino.
     @Override
     public String[] opciones() {
         return new String[] {
@@ -56,6 +58,7 @@ public class MenuVecino extends MenuBase {
         };
     }
 
+    // Ejecuta la accion de la opcion elegida.
     @Override
     public void ejecutarOpcion(int opcion) {
         switch (opcion) {
@@ -75,7 +78,7 @@ public class MenuVecino extends MenuBase {
         }
     }
 
-    // Si el vecino tiene un solo lote se usa ese; si tiene varios, elige uno.
+    // Pide al vecino que elija uno de sus lotes.
     private Lote elegirMiLote() {
         List<Lote> lotes = barrio.lotesDe(vecino);
         if (lotes.size() == 1) {
@@ -84,6 +87,7 @@ public class MenuVecino extends MenuBase {
         return lotes.get(consola.elegir("Sus lotes", lotes.toArray()));
     }
 
+    // Pide los datos y presenta un reclamo.
     private void presentarReclamo() {
         Lote lote = elegirMiLote();
         TipoReclamo tipo = TipoReclamo.values()[consola.elegir("Tipo de reclamo", TipoReclamo.values())];
@@ -97,6 +101,7 @@ public class MenuVecino extends MenuBase {
         }
     }
 
+    // Muestra los reclamos del vecino.
     private void verMisReclamos() {
         List<Reclamo> lista = reclamos.consultarReclamosDe(vecino);
         consola.titulo("Mis reclamos");
@@ -114,6 +119,7 @@ public class MenuVecino extends MenuBase {
         }
     }
 
+    // Agrega un comentario a un reclamo propio.
     private void comentarReclamo() {
         Reclamo reclamo = pedirReclamo();
         if (reclamo == null) {
@@ -128,6 +134,7 @@ public class MenuVecino extends MenuBase {
         }
     }
 
+    // Reabre un reclamo resuelto.
     private void reabrirReclamo() {
         Reclamo reclamo = pedirReclamo();
         if (reclamo == null) {
@@ -141,6 +148,7 @@ public class MenuVecino extends MenuBase {
         }
     }
 
+    // Registra un pago de expensas del vecino.
     private void registrarPago() {
         Lote lote = elegirMiLote();
         mostrarDeudas(lote);
@@ -154,6 +162,7 @@ public class MenuVecino extends MenuBase {
         }
     }
 
+    // Autoriza el ingreso de una visita o proveedor.
     private void autorizarVisita() {
         Lote lote = elegirMiLote();
         String nombre = consola.leerTexto("Nombre del visitante");
@@ -180,11 +189,13 @@ public class MenuVecino extends MenuBase {
         }
     }
 
+    // Muestra las autorizaciones que dio el vecino.
     private void verMisAutorizaciones() {
         consola.titulo("Mis autorizaciones de visita");
         consola.listar("no tiene autorizaciones", visitas.consultarAutorizacionesDe(vecino));
     }
 
+    // Autoriza a un residente a presentar reclamos.
     private void autorizarReclamante() {
         Lote lote = elegirMiLote();
         List<Vecino> residentes = lote.getResidentes();
