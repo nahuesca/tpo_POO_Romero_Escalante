@@ -9,11 +9,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-// Implementa Comparable: el orden natural de los reclamos es por numero.
-// Los momentos (creacion, resolucion) son "horas" del reloj del sistema (ver Barrio).
+// Reclamo de un vecino con su estado, responsable, historial y comentarios.
 public class Reclamo implements Comparable<Reclamo>, Serializable {
     public static final int HORAS_ESCALADO = 24;
-    public static final int HORAS_REAPERTURA = 5 * 24; // 5 dias
+    public static final int HORAS_REAPERTURA = 5 * 24;
 
     private int numero;
     private int horaCreacion;
@@ -29,7 +28,6 @@ public class Reclamo implements Comparable<Reclamo>, Serializable {
     private List<CambioEstado> cambios = new ArrayList<>();
     private List<Comentario> comentarios = new ArrayList<>();
 
-    // El reclamo nace ABIERTO y con la prioridad que corresponde a su tipo.
     public Reclamo(int numero, Lote lote, Vecino autor, TipoReclamo tipo, String descripcion, int ahora) {
         this.numero = numero;
         this.lote = lote;
@@ -42,7 +40,7 @@ public class Reclamo implements Comparable<Reclamo>, Serializable {
         cambios.add(new CambioEstado(ahora, EstadoReclamo.ABIERTO, "Reclamo presentado"));
     }
 
-    // Solo se puede avanzar al estado siguiente.
+    // Pasa el reclamo al estado siguiente y lo anota en el historial.
     public void cambiarEstado(EstadoReclamo nuevoEstado, String observacion, int ahora)
             throws ReglaNegocioException {
         if (nuevoEstado != estado.siguiente()) {
@@ -59,7 +57,7 @@ public class Reclamo implements Comparable<Reclamo>, Serializable {
         cambios.add(new CambioEstado(ahora, nuevoEstado, observacion));
     }
 
-    // Cada reclamo tiene un unico responsable. Al asignarlo pasa de ABIERTO a ASIGNADO.
+    // Asigna un responsable al reclamo y lo pasa a ASIGNADO.
     public void asignarResponsable(Personal nuevoResponsable, int ahora) throws ReglaNegocioException {
         if (estado != EstadoReclamo.ABIERTO) {
             throw new ReglaNegocioException("Solo se puede asignar un reclamo ABIERTO (estado actual: "
@@ -70,7 +68,7 @@ public class Reclamo implements Comparable<Reclamo>, Serializable {
                 + nuevoResponsable.getApellido(), ahora);
     }
 
-    // El vecino puede reabrir un reclamo RESUELTO dentro de los 5 dias. Vuelve a EN_CURSO.
+    // Reabre un reclamo resuelto, siempre que no hayan pasado 5 dias desde la resolucion.
     public void reabrir(int ahora) throws ReglaNegocioException {
         if (estado != EstadoReclamo.RESUELTO) {
             throw new ReglaNegocioException("Solo se puede reabrir un reclamo RESUELTO (estado actual: "
@@ -83,31 +81,34 @@ public class Reclamo implements Comparable<Reclamo>, Serializable {
         cambios.add(new CambioEstado(ahora, EstadoReclamo.EN_CURSO, "Reabierto por el vecino"));
     }
 
+    // Agrega un comentario al reclamo.
     public void agregarComentario(Persona autorComentario, String texto, int ahora) {
         comentarios.add(new Comentario(ahora, autorComentario, texto));
     }
 
-    // Prioridad alta, todavia ABIERTO (nadie lo atendio) y pasaron mas de 24 horas: se escala al administrador.
+    // Indica si un reclamo de prioridad alta sigue abierto y lleva mas de 24 horas sin atender.
     public boolean debeEscalarse(int ahora) {
         return prioridad == Prioridad.ALTA && estado == EstadoReclamo.ABIERTO && !escalado
                 && ahora - horaCreacion > HORAS_ESCALADO;
     }
 
+    // Marca el reclamo como escalado al administrador.
     public void escalar() {
         escalado = true;
     }
 
-    // Resuelto y el vecino no respondio en 5 dias: se cierra solo.
+    // Indica si un reclamo resuelto lleva 5 dias sin respuesta del vecino.
     public boolean debeCerrarse(int ahora) {
         return estado == EstadoReclamo.RESUELTO && ahora - horaResolucion > HORAS_REAPERTURA;
     }
 
-    // Pendiente = todavia no esta resuelto
+    // Indica si el reclamo todavia no se resolvio.
     public boolean estaPendiente() {
         return estado == EstadoReclamo.ABIERTO || estado == EstadoReclamo.ASIGNADO
                 || estado == EstadoReclamo.EN_CURSO;
     }
 
+    // Ordena los reclamos por numero.
     @Override
     public int compareTo(Reclamo otro) {
         return numero - otro.numero;
